@@ -1,10 +1,10 @@
 #include "Game.h"
 #include <iostream>
+
 Game::Game(int width, int height)
 	: m_Width(width), m_Height(height), m_Raycaster(width, height)
 {
 
-	assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 	m_Window = SDL_CreateWindow("The Escape", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, NULL);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
