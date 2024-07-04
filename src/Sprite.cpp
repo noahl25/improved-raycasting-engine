@@ -1,5 +1,5 @@
 #include "Sprite.h"
-
+#include <iostream>
 Sprite::Sprite()
 {
 }
@@ -10,9 +10,16 @@ Sprite::Sprite(const glm::vec3& position)
 
 }
 
-void Sprite::SetTexture(SDL_Renderer* renderer, const char* path)
+void Sprite::SetTexture(SDL_Renderer* renderer, const std::string& path)
 {
-    test.SetTexture(path);
+    int key = m_StringHash(path);
+    if (m_TextureAtlas.find(key) == m_TextureAtlas.end()) {
+
+        Texture temp(path.c_str());
+        m_TextureAtlas[key] = temp;
+    }
+    m_TextureKey = key;
+
 }
 
 void Sprite::Update()
@@ -22,8 +29,7 @@ void Sprite::Update()
 void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, float* zBuffer) const
 {
 
-    if (glm::distance(camera.Position, glm::vec2(m_Position.x, m_Position.y)) > 5.0f)
-        return;
+    const Texture& tex = m_TextureAtlas[m_TextureKey];
 
 	glm::vec2 cameraRight = glm::normalize(glm::vec2(-glm::sin(glm::radians(camera.Yaw)), glm::cos(glm::radians(camera.Yaw))));
 
@@ -41,7 +47,7 @@ void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, fl
 	float transformX = invDet * (dirY * spriteX - dirX * spriteY);
 	float transformY = invDet * (-planeY * spriteX + planeX * spriteY);
 
-	if (transformY < 0)
+	if (transformY < 0 || -FALLOFF * transformY + 1 <= 0)
 		return;
 
 	int spriteScreenX = (int)((renderer.GetWidth() / 2) * (1 + transformX / transformY));
@@ -63,15 +69,15 @@ void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, fl
  
     for (int stripe = drawStartX; stripe < drawEndX; stripe++)
     {
-        int texX = int(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * test.GetWidth() / spriteWidth) / 256;
+        int texX = int(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * tex.GetWidth() / spriteWidth) / 256;
  
         if (transformY > 0 && stripe > 0 && stripe < renderer.GetWidth() && transformY < zBuffer[stripe]) {
             for (int y = drawStartY; y < drawEndY; y++) 
             {
                 int d = (y) * 256 - renderer.GetHeight() * 128 + spriteHeight * 128;  
-                int texY = ((d * test.GetHeight()) / spriteHeight) / 256;
+                int texY = ((d * tex.GetHeight()) / spriteHeight) / 256;
 
-                uint32_t color = test.PixelAtOptimized(texX, texY);
+                uint32_t color = tex.PixelAt(texX, texY);
                 color = Util::MultiplyRGBA(color, -FALLOFF * transformY + 1);
                 if ((color & 0xff) != 0)
                     pixels[y * renderer.GetWidth() + stripe] = color;

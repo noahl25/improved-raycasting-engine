@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <SDL_image.h> 
+#include <algorithm>
 
 #include "Sprite.h"
 #include "Ray.h"
@@ -23,7 +24,14 @@ public:
 			return true;
 		return false;
 	}
-	inline const std::vector<Sprite>& GetSprites() const { return m_Sprites; }
+	inline const std::vector<Sprite>& GetSpritesSorted(const Camera& camera) { 
+		std::sort(m_Sprites.begin(), m_Sprites.end(), [camera](const Sprite& first, const Sprite& second) {
+			float firstDist = (first.GetPosition().x - camera.Position.x) * (first.GetPosition().x - camera.Position.x) + (first.GetPosition().y - camera.Position.y) * (first.GetPosition().y - camera.Position.y);
+			float secondDist = (second.GetPosition().x - camera.Position.x) * (second.GetPosition().x - camera.Position.x) + (second.GetPosition().y - camera.Position.y) * (second.GetPosition().y - camera.Position.y);
+			return firstDist > secondDist;
+		});
+		return m_Sprites;
+	}
 	inline const glm::vec2& GetStartingPos() const { return m_PlayerStartingPos; }
 
 private:

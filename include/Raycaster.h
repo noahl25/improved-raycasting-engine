@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <algorithm>
+#include <thread>
 
 #include "Renderer.h"
 #include "World.h"
@@ -30,10 +31,14 @@ private:
 	World* m_World;
 
 	float* m_ZBuffer = nullptr;
-	std::vector<RaycastHit> m_Hits;
+	
+	bool m_TerminateThreads = false;
 
-	const int TEX_SIZE = 16;
-	const float FALLOFF = 0.23f;
+	static inline const int TEX_SIZE = 16;
+	static inline const float FALLOFF = 0.23f;
+	static inline const int NUM_THREADS = 3;
+
+	std::thread m_RaycastingThreads[NUM_THREADS];
 
 
 };

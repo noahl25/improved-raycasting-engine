@@ -14,11 +14,11 @@ void World::LoadWorld(const char* path)
 	for (int i = 0; i < m_MapHeight; i++) {
 		for (int j = 0; j < m_MapWidth; j++) {
 
-			if (temp.PixelAt(j, i) == Color::Black) {
+			if (temp.PixelAtVec(j, i) == Color::Black) {
 				m_Map[i * m_MapWidth + j] = 1;
 			}
 
-			if (temp.PixelAt(j, i) == Color::Red) {
+			if (temp.PixelAtVec(j, i) == Color::Red) {
 				m_PlayerStartingPos = glm::vec2(i + 0.5f, j + 0.5f);
 				startingPosFound = true;
 			}
@@ -31,6 +31,8 @@ void World::LoadWorld(const char* path)
 
 	Sprite sprite(glm::vec3(3.5f, 4.0f, 1.0f));
 	sprite.SetTexture(Renderer::GetActiveRenderer(), "res/sprites/barrel.png");
+	m_Sprites.push_back(sprite);
+	sprite.SetPosition(glm::vec3(3.5f, 2.0f, 1.0f));
 	m_Sprites.push_back(sprite);
 
 }

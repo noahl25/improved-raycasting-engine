@@ -1,17 +1,9 @@
 #include "Texture.h"
 #include <iostream>
-
 Texture::Texture(const char* path)
-{
-	int channels;
-
-	unsigned char* data = stbi_load(path, &m_Width, &m_Height, &channels, 4);
-	if (data == NULL) __debugbreak();
-
-	
-
-	m_Data = data;
-
+{	
+ 
+	SetTexture(path);
  
 }
 
@@ -20,23 +12,10 @@ Texture::Texture(const Texture& other)
 	m_Width = other.m_Width;
 	m_Height = other.m_Height;
 
-	m_Data = new unsigned char[m_Width * m_Height * sizeof(uint32_t)];
-	std::memcpy(m_Data, other.m_Data, m_Width * m_Height * sizeof(uint32_t));
-}
+	m_LookupTable = new uint32_t[m_Width * m_Height];
+	for (int i = 0; i < m_Width * m_Height; i++)
+		m_LookupTable[i] = other.m_LookupTable[i];
 
-Texture::Texture()
-{
-}
-
-glm::vec4 Texture::PixelAt(int x, int y) const
-{
-	if (m_Data == nullptr) __debugbreak();
-	glm::vec4 pixel = glm::vec4(0.0f);
-	pixel.r = (int)m_Data[(y * m_Width + x) * 4] / 255.0f;
-	pixel.g = (int)m_Data[(y * m_Width + x) * 4 + 1] / 255.0f;
-	pixel.b = (int)m_Data[(y * m_Width + x) * 4 + 2] / 255.0f;
-	pixel.a = (int)m_Data[(y * m_Width + x) * 4 + 3] / 255.0f;
-	return pixel;
 }
 
 void Texture::SetTexture(const char* path)
@@ -46,10 +25,46 @@ void Texture::SetTexture(const char* path)
 	unsigned char* data = stbi_load(path, &m_Width, &m_Height, &channels, 4);
 	if (data == NULL) __debugbreak();
 
-	m_Data = data;
+	if (m_LookupTable != nullptr)
+		delete[] m_LookupTable;
+
+	m_LookupTable = new uint32_t[m_Width * m_Height];
+	for (int i = 0; i < m_Width * m_Height; i++) {
+		int index = i * 4;
+		m_LookupTable[i] = (data[index] << 24) | (data[index + 1] << 16) | (data[index + 2] << 8) | data[index + 3];
+	}
+
+	stbi_image_free(data);
+
+}
+
+Texture& Texture::operator=(const Texture& other)
+{
+	m_Width = other.m_Width;
+	m_Height = other.m_Height;
+
+	m_LookupTable = new uint32_t[m_Width * m_Height];
+	for (int i = 0; i < m_Width * m_Height; i++)
+		m_LookupTable[i] = other.m_LookupTable[i];
+
+	return *this;
+}
+
+glm::vec4 Texture::PixelAtVec(int x, int y) const
+{
+	if (m_LookupTable == nullptr) __debugbreak();
+	glm::vec4 pixel = glm::vec4(0.0f);
+	uint32_t color = m_LookupTable[y * m_Width + x];
+	pixel.r = ((color >> 24) & 0xFF) / 255.0f;
+	pixel.g = ((color >> 16) & 0xFF) / 255.0f;
+	pixel.b = ((color >> 8) & 0xFF) / 255.0f;
+	pixel.a = (color & 0xFF) / 255.0f;
+	return pixel;
 }
 
 Texture::~Texture()
 {
-	stbi_image_free(m_Data);
+	if (m_LookupTable != nullptr)
+		delete[] m_LookupTable;
 }
+

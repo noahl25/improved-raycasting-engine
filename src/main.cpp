@@ -7,8 +7,8 @@ int main(int argc, char** args) {
 	SDL_DisplayMode display;
 	SDL_GetCurrentDisplayMode(0, &display);
 
-	int w = display.w / 2.0f;
-	int h = display.h / 1.5f;
+	int w = display.w / 2.75f;
+	int h = display.h / 1.75f;
 
 	Game game(w, h);
 	game.Run();

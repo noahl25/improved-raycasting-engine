@@ -1,5 +1,4 @@
 #include "Game.h"
-#include <iostream>
 
 Game::Game(int width, int height)
 	: m_Width(width), m_Height(height), m_Raycaster(width, height)
@@ -43,8 +42,6 @@ void Game::Run()
 			if (deltaTimeTarget > frameTime)
 				SDL_Delay(deltaTimeTarget - frameTime);
 
-			 
-
 		}
 
 	}
@@ -56,8 +53,7 @@ void Game::HandleEvents()
 {
  
 	const float moveSpeed = 0.01f;
-	const float lookSpeedX = 0.05f;
-	const float lookSpeedY = 0.3f;
+	const float lookSpeedX = 2.0f;
  
 	while ((SDL_PollEvent(&m_Event)) != 0)
 	{
@@ -71,10 +67,7 @@ void Game::HandleEvents()
 				m_Running = false;
 			break;
 		case SDL_MOUSEMOTION:
-			m_Camera.Yaw += m_Event.motion.xrel * lookSpeedX;
-			m_Camera.Pitch += m_Event.motion.yrel * lookSpeedY;
-			m_Camera.Pitch = glm::clamp(m_Camera.Pitch, -89.0f, 89.0f);
-
+			m_Camera.Yaw = Util::Lerp(m_Camera.Yaw, m_Camera.Yaw + m_Event.motion.xrel * lookSpeedX, 0.016f);
 		}
 	}
 
@@ -107,8 +100,6 @@ void Game::HandleEvents()
 
 void Game::Update()
 {
- 
- 
  
 	m_Raycaster.Update(m_Camera);
 
