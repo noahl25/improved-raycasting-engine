@@ -42,6 +42,7 @@ void Game::Run()
 			if (deltaTimeTarget > frameTime)
 				SDL_Delay(deltaTimeTarget - frameTime);
 
+
 		}
 
 	}
@@ -54,6 +55,7 @@ void Game::HandleEvents()
  
 	const float moveSpeed = 0.01f;
 	const float lookSpeedX = 2.0f;
+	const float lookSpeedY = 0.5f;
  
 	while ((SDL_PollEvent(&m_Event)) != 0)
 	{
@@ -68,6 +70,9 @@ void Game::HandleEvents()
 			break;
 		case SDL_MOUSEMOTION:
 			m_Camera.Yaw = Util::Lerp(m_Camera.Yaw, m_Camera.Yaw + m_Event.motion.xrel * lookSpeedX, 0.016f);
+			m_Camera.Pitch -= m_Event.motion.yrel * lookSpeedY;
+			m_Camera.Pitch = std::min(std::max(m_Camera.Pitch, -m_Height / 2.0f), m_Height / 2.0f);
+			break;
 		}
 	}
 

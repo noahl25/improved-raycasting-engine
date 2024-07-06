@@ -19,37 +19,17 @@ namespace Util {
         
         return a + (b - a) * t;
     }
-
-	__forceinline uint32_t MultiplyRGBA(uint32_t RGBA, float value) {
  
-        __m128i color = _mm_set1_epi32(RGBA);
- 
-        __m128i mask = _mm_set1_epi32(0xFF);
-        __m128i r = _mm_and_si128(_mm_srli_epi32(color, 24), mask);
-        __m128i g = _mm_and_si128(_mm_srli_epi32(color, 16), mask);
-        __m128i b = _mm_and_si128(_mm_srli_epi32(color, 8), mask);
-        __m128i a = _mm_and_si128(color, mask);
+    inline uint32_t MultiplyRGBA(uint32_t RGBA, float value) {
 
-        __m128 fr = _mm_cvtepi32_ps(r);
-        __m128 fg = _mm_cvtepi32_ps(g);
-        __m128 fb = _mm_cvtepi32_ps(b);
-        __m128 fa = _mm_cvtepi32_ps(a);
+        if (value <= 0)
+            return 0x000000ff;
 
-        __m128 factor = _mm_set1_ps(value);
-        fr = _mm_mul_ps(fr, factor);
-        fg = _mm_mul_ps(fg, factor);
-        fb = _mm_mul_ps(fb, factor);
-        fa = _mm_mul_ps(fa, factor);
+        uint32_t r = (RGBA & 0xff000000) * value;
+        uint32_t g = (RGBA & 0x00ff0000) * value;
+        uint32_t b = (RGBA & 0x0000ff00) * value;
+        uint32_t a = (RGBA & 0x000000ff);
 
-        __m128i ir = _mm_min_epi32(_mm_max_epi32(_mm_cvtps_epi32(fr), _mm_setzero_si128()), mask);
-        __m128i ig = _mm_min_epi32(_mm_max_epi32(_mm_cvtps_epi32(fg), _mm_setzero_si128()), mask);
-        __m128i ib = _mm_min_epi32(_mm_max_epi32(_mm_cvtps_epi32(fb), _mm_setzero_si128()), mask);
-        __m128i ia = _mm_min_epi32(_mm_max_epi32(_mm_cvtps_epi32(fa), _mm_setzero_si128()), mask);
-
-        __m128i result = _mm_or_si128(_mm_or_si128(_mm_slli_epi32(ir, 24), _mm_slli_epi32(ig, 16)), _mm_or_si128(_mm_slli_epi32(ib, 8), ia));
-
-        uint32_t finalColor;
-        _mm_store_ss(reinterpret_cast<float*>(&finalColor), _mm_castsi128_ps(result));
-        return finalColor;
-	}
+        return (r & 0xff000000) | (g & 0x00ff0000) | (b & 0x0000ff00) | a;
+    }
 }

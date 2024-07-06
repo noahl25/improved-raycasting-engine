@@ -31,6 +31,7 @@ void World::LoadWorld(const char* path)
 
 	Sprite sprite(glm::vec3(3.5f, 4.0f, 1.0f));
 	sprite.SetTexture(Renderer::GetActiveRenderer(), "res/sprites/barrel.png");
+	sprite.SetScale(2.0f);
 	m_Sprites.push_back(sprite);
 	sprite.SetPosition(glm::vec3(3.5f, 2.0f, 1.0f));
 	m_Sprites.push_back(sprite);

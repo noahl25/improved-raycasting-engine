@@ -30,5 +30,6 @@ private:
 	int m_Width, m_Height;
 	bool m_Running = true;
 	bool m_Paused = false;
+	float m_DeltaTime = 0.016f;
 
 };

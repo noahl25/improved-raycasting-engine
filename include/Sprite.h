@@ -25,11 +25,17 @@ public:
 	inline void Kill() { m_Active = false; }
 	inline const glm::vec3& GetPosition() const { return m_Position; }
 	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
+	inline void SetScale(float scale) { 
+		m_Scale = scale; 
+		m_Height = (scale - 1) * m_SpriteHeight * 12;
+	}
 
 private:
 
 	glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
 	bool m_Active = true;
+	float m_Scale = 1;
+	float m_Height = 0.0f;
 	int m_TextureKey;
 	int m_SpriteWidth, m_SpriteHeight;
 

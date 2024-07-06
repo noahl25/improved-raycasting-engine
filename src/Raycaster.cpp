@@ -27,7 +27,7 @@ static float AngleBetween(const glm::vec2& first, const glm::vec2& second) {
 
 static Texture texture("res/textures/cobble.png");
 #define MT true
-
+#include <iostream>
 void Raycaster::Update(const Camera& camera)
 {
  
@@ -68,17 +68,19 @@ void Raycaster::Update(const Camera& camera)
 						m_ZBuffer[i + m_Width / 2] = normalizedDist;
 
 						float lineHeight = m_Height / normalizedDist;
-
 						float step = 16.0f / (float)lineHeight;
 						float texOffset = 0.0f;
+						
+						//bounds checking instead of clamping
+						//if (lineHeight > m_Height) {
+						//	texOffset = (float)(lineHeight - m_Height) / 2.0f;
+						//	lineHeight = m_Height;
+						//}
 
-						if (lineHeight > m_Height) {
-							texOffset = (float)(lineHeight - m_Height) / 2.0f;
-							lineHeight = m_Height;
-						}
 						float lineOffset = (m_Height - lineHeight) / 2;
 
-						float texY = texOffset * step;
+						lineOffset += camera.Pitch;
+						
 
 						float wallX = 0;
 						if (hit.Side == 0)
@@ -87,30 +89,43 @@ void Raycaster::Update(const Camera& camera)
 							wallX = hit.HitPos.x;
 						wallX -= glm::floor(wallX);
 
-						int texX = (int)(wallX * (float)TEX_SIZE);
+						if (-FALLOFF * hit.Distance + 1 > 0) {
 
-						if (hit.Side == 0 && ray.Direction.x > 0)
-							texX = TEX_SIZE - 1 - texX;
-						if (hit.Side == 1 && ray.Direction.y < 0)
-							texX = TEX_SIZE - 1 - texX;
+							float texY = texOffset * step;
 
-						float colorMod = -FALLOFF * hit.Distance + 1;
-						if (colorMod < 0) colorMod = 0;
+							int texX = (int)(wallX * (float)TEX_SIZE);
 
-						for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
+							if (hit.Side == 0 && ray.Direction.x > 0)
+								texX = TEX_SIZE - 1 - texX;
+							if (hit.Side == 1 && ray.Direction.y < 0)
+								texX = TEX_SIZE - 1 - texX;
 
-							uint32_t color = texture.PixelAt((int)texX, (int)texY);
-							//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
-							color = Util::MultiplyRGBA(color, colorMod);
+							float colorMod = -FALLOFF * hit.Distance + 1;
+							if (colorMod < 0) colorMod = 0;
 
-							pixels[j * m_Width + i + (m_Width / 2)] = color;
+							for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
 
-							texY += step;
-							texY = glm::clamp(texY, 0.0f, (float)TEX_SIZE - 1);
+								uint32_t color = texture.PixelAt((int)texX, (int)texY);
+								//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
+								color = Util::MultiplyRGBA(color, colorMod);
 
+								if (j < m_Height && j >= 0)
+									pixels[j * m_Width + i + (m_Width / 2)] = color;
+
+								texY += step;
+								texY = std::min(std::max(texY, 0.0f), (float)TEX_SIZE - 1);
+
+							}
 						}
-
+						else {
+							for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
+								if (j < m_Height && j >= 0)
+									pixels[j * m_Width + i + (m_Width / 2)] = 0x000000ff;
+							}
+						}
 						/* --floor-- */
+
+						//thanks to lodev for help with this!
 
 						float floorXWall, floorYWall;
 
@@ -137,24 +152,28 @@ void Raycaster::Update(const Camera& camera)
 						float distWall = normalizedDist;
 
 						for (int j = offset + 1; j < m_Height; j++) {
-							float currentDist = m_Height / (2.0f * j - m_Height);
-							float weight = currentDist / distWall;
+							if (j < m_Height && j >= 0) {
+								float currentDist = m_Height / (2.0 * (j - camera.Pitch) - m_Height);
 
-							float currentFloorX = weight * floorXWall + (1.0f - weight) * camera.Position.x;
-							float currentFloorY = weight * floorYWall + (1.0f - weight) * camera.Position.y;
+								float weight = currentDist / distWall;
 
-							int floorTexX = (int)(currentFloorX * TEX_SIZE) % TEX_SIZE;
-							int floorTexY = (int)(currentFloorY * TEX_SIZE) % TEX_SIZE;
+								float currentFloorX = weight * floorXWall + (1.0f - weight) * camera.Position.x;
+								float currentFloorY = weight * floorYWall + (1.0f - weight) * camera.Position.y;
 
-							float floorColorMod = -FALLOFF * currentDist + 1;
+								int floorTexX = (int)(currentFloorX * TEX_SIZE) % TEX_SIZE;
+								int floorTexY = (int)(currentFloorY * TEX_SIZE) % TEX_SIZE;
 
-							uint32_t color = texture.PixelAt(floorTexX, floorTexY);
-							color = Util::MultiplyRGBA(color, floorColorMod);
-							pixels[j * m_Width + i + (m_Width / 2)] = color;
+								float floorColorMod = -FALLOFF * currentDist + 1;
+
+								uint32_t color = texture.PixelAt(floorTexX, floorTexY);
+								color = Util::MultiplyRGBA(color, floorColorMod);
+								pixels[j * m_Width + i + (m_Width / 2)] = color;
+							}
 						}
 
 						for (int j = 0; j < lineOffset; j++) {
-							pixels[j * m_Width + i + (m_Width / 2)] = 0x000000ff;
+							if (j < m_Height && j >= 0)
+								pixels[j * m_Width + i + (m_Width / 2)] = 0x000000ff;
 						}
 
 					}
@@ -163,12 +182,12 @@ void Raycaster::Update(const Camera& camera)
 				}
 			}
 		);
-
+ 
 		begin += division;
 		end += division;
 
-	}
 
+	}
 	for (int i = 0; i < NUM_THREADS; i++) {
 		m_RaycastingThreads[i].join();
 	}

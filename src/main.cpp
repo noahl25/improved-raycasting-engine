@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Timer.h"
 
 int main(int argc, char** args) {
 

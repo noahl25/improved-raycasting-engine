@@ -20,6 +20,10 @@ void Sprite::SetTexture(SDL_Renderer* renderer, const std::string& path)
     }
     m_TextureKey = key;
 
+    Texture& temp = m_TextureAtlas[m_TextureKey];
+    m_SpriteHeight = temp.GetHeight();
+    m_SpriteWidth = temp.GetWidth();
+
 }
 
 void Sprite::Update()
@@ -28,6 +32,8 @@ void Sprite::Update()
  
 void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, float* zBuffer) const
 {
+
+    //thanks to lodev for help with this!
 
     const Texture& tex = m_TextureAtlas[m_TextureKey];
 
@@ -39,8 +45,8 @@ void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, fl
 	float dirX = glm::cos(glm::radians(camera.Yaw));
 	float dirY = glm::sin(glm::radians(camera.Yaw));
 
-	float planeX = cameraRight.x / 2;
-	float planeY = cameraRight.y / 2;
+	float planeX = cameraRight.x / 2.0f;
+	float planeY = cameraRight.y / 2.0f;
 
 	float invDet = 1.0f / (planeX * dirY - dirX * planeY);
 
@@ -50,31 +56,30 @@ void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, fl
 	if (transformY < 0 || -FALLOFF * transformY + 1 <= 0)
 		return;
 
+    int move = glm::round(m_Height / transformY) + camera.Pitch;
+
 	int spriteScreenX = (int)((renderer.GetWidth() / 2) * (1 + transformX / transformY));
 
-    int spriteHeight = abs(int(renderer.GetHeight() / (transformY))); 
+    int spriteHeight = glm::abs(int(renderer.GetHeight() / (transformY))) / m_Scale;
  
-    int drawStartY = -spriteHeight / 2 + renderer.GetHeight() / 2;
+    int drawStartY = -spriteHeight / 2 + renderer.GetHeight() / 2 + move;
     if (drawStartY < 0) drawStartY = 0;
-    int drawEndY = spriteHeight / 2 + renderer.GetHeight() / 2;
+    int drawEndY = spriteHeight / 2 + renderer.GetHeight() / 2 + move;
     if (drawEndY >= renderer.GetHeight()) drawEndY = renderer.GetHeight() - 1;
 
  
-    int spriteWidth = abs(int(renderer.GetHeight() / (transformY)));
+    int spriteWidth = glm::abs(int(renderer.GetHeight() / (transformY))) / m_Scale;
     int drawStartX = -spriteWidth / 2 + spriteScreenX;
-    if (drawStartX < 0) drawStartX = 0;
     int drawEndX = spriteWidth / 2 + spriteScreenX;
-    if (drawEndX >= renderer.GetWidth()) drawEndX = renderer.GetWidth() - 1;
- 
  
     for (int stripe = drawStartX; stripe < drawEndX; stripe++)
     {
-        int texX = int(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * tex.GetWidth() / spriteWidth) / 256;
+        int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * tex.GetWidth() / spriteWidth) / 256;
  
         if (transformY > 0 && stripe > 0 && stripe < renderer.GetWidth() && transformY < zBuffer[stripe]) {
-            for (int y = drawStartY; y < drawEndY; y++) 
+            for (int y = (drawStartY < 0 ? 0 : drawStartY); y < (drawEndY >= renderer.GetHeight() ? renderer.GetHeight() : drawEndY); y++) 
             {
-                int d = (y) * 256 - renderer.GetHeight() * 128 + spriteHeight * 128;  
+                int d = (y - move) * 256 - renderer.GetHeight() * 128 + spriteHeight * 128;  
                 int texY = ((d * tex.GetHeight()) / spriteHeight) / 256;
 
                 uint32_t color = tex.PixelAt(texX, texY);
