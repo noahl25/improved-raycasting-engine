@@ -20,7 +20,7 @@ public:
 	void SetTexture(SDL_Renderer* renderer, const std::string& path);
 
 	virtual void Update();
-	virtual void Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, float* zBuffer) const;
+	virtual void Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixels, float* zBuffer) const;
 	
 	inline void Kill() { m_Active = false; }
 	inline const glm::vec3& GetPosition() const { return m_Position; }
@@ -29,6 +29,10 @@ public:
 		m_Scale = scale; 
 		m_Height = (scale - 1) * m_SpriteHeight * 12;
 	}
+
+	//rather than raycasting to see what sprites are on crosshair, simply check when drawing to see if any pixels overlap with the center
+	static inline Sprite* HoveredSprite = nullptr;
+	static inline float HoveredSpriteDistance = 0.0f;
 
 private:
 

@@ -74,10 +74,12 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\vendor\SDL2\include;$(SolutionDir)\vendor\glm;$(SolutionDir)\vendor;$(SolutionDir)\include</IncludePath>
     <LibraryWPath>$(WindowsSDK_MetadataPath);</LibraryWPath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\vendor\SDL2\lib\x64</LibraryPath>
+    <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\vendor\SDL2\include;$(SolutionDir)\vendor\glm;$(SolutionDir)\vendor;$(SolutionDir)\include</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(SolutionDir)\vendor\SDL2\lib\x64</LibraryPath>
+    <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -173,6 +175,7 @@
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Sprite.h" />
     <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="include\SizedThreadPool.h" />
     <ClInclude Include="include\Timer.h" />
     <ClInclude Include="include\Util.h" />
     <ClInclude Include="include\World.h" />

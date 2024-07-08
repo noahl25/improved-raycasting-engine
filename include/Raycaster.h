@@ -11,6 +11,9 @@
 #include "Ray.h"
 #include "Color.h"
 #include "Texture.h"
+#include "SizedThreadPool.h"
+
+#define MULTITHREADED true
 
 class Raycaster {
 
@@ -21,9 +24,14 @@ public:
 	void Init(SDL_Window* window);
 	void SetActiveWorld(World* world);
 
-	void Update(const Camera& camera);
+	void Update(const Camera camera);
 
 private:
+
+
+	void RaycastMT(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels);
+	void RaycastSingle(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels);
+	void DrawSprites(const Camera& camera, uint32_t* pixels);
 
 	int m_Width, m_Height;
 	Renderer m_Renderer;
@@ -36,9 +44,14 @@ private:
 
 	static inline const int TEX_SIZE = 16;
 	static inline const float FALLOFF = 0.23f;
+
+#ifdef MULTITHREADED
+
 	static inline const int NUM_THREADS = 3;
 
-	std::thread m_RaycastingThreads[NUM_THREADS];
+	SizedThreadPool<NUM_THREADS> m_ThreadPool;
+
+#endif
 
 
 };

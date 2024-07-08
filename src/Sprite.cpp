@@ -30,7 +30,7 @@ void Sprite::Update()
 {
 }
  
-void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, float* zBuffer) const
+void Sprite::Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixels, float* zBuffer) const
 {
 
     //thanks to lodev for help with this!
@@ -60,15 +60,15 @@ void Sprite::Draw(Renderer& renderer, const Camera& camera, uint32_t* pixels, fl
 
 	int spriteScreenX = (int)((renderer.GetWidth() / 2) * (1 + transformX / transformY));
 
-    int spriteHeight = glm::abs(int(renderer.GetHeight() / (transformY))) / m_Scale;
+    int spriteHeight = glm::round(glm::abs((int)(renderer.GetHeight() / (transformY))) / m_Scale);
  
-    int drawStartY = -spriteHeight / 2 + renderer.GetHeight() / 2 + move;
+    int drawStartY = glm::round(-spriteHeight / 2.0f + renderer.GetHeight() / 2.0f + move);
     if (drawStartY < 0) drawStartY = 0;
-    int drawEndY = spriteHeight / 2 + renderer.GetHeight() / 2 + move;
+    int drawEndY = glm::round(spriteHeight / 2.0f + renderer.GetHeight() / 2.0f + move);
     if (drawEndY >= renderer.GetHeight()) drawEndY = renderer.GetHeight() - 1;
 
  
-    int spriteWidth = glm::abs(int(renderer.GetHeight() / (transformY))) / m_Scale;
+    int spriteWidth = glm::round(glm::abs((int)(renderer.GetHeight() / (transformY))) / m_Scale);
     int drawStartX = -spriteWidth / 2 + spriteScreenX;
     int drawEndX = spriteWidth / 2 + spriteScreenX;
  

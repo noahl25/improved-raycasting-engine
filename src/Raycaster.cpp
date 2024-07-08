@@ -7,7 +7,7 @@ Raycaster::Raycaster(int width, int height)
 
 void Raycaster::Init(SDL_Window* window)
 {
-	m_Renderer.Init(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED));
+	m_Renderer.Init(SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC));
  
 }
 
@@ -26,9 +26,8 @@ static float AngleBetween(const glm::vec2& first, const glm::vec2& second) {
 }
 
 static Texture texture("res/textures/cobble.png");
-#define MT true
-#include <iostream>
-void Raycaster::Update(const Camera& camera)
+
+void Raycaster::Update(const Camera camera)
 {
  
 	m_Renderer.Clear();
@@ -38,14 +37,36 @@ void Raycaster::Update(const Camera& camera)
 
 	static SDL_Surface* surface = SDL_CreateRGBSurface(0, m_Width, m_Height, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 	uint32_t* pixels = static_cast<uint32_t*>(surface->pixels);
-#if MT
+
+#if MULTITHREADED
+	
+	RaycastMT(camera, cameraDir, cameraRight, pixels);
+
+#else
+
+	RaycastSingle(camera, cameraDir, cameraRight, pixels);
+	 
+#endif
+
+	DrawSprites(camera, pixels);
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer.GetRenderer(), surface);
+	m_Renderer.Blit(texture);
+
+	SDL_DestroyTexture(texture);
+	m_Renderer.Present();
+
+}
+
+void Raycaster::RaycastMT(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels)
+{
 	int division = m_Width / NUM_THREADS;
 	int begin = -m_Width / 2;
 	int end = begin + division;
 
 	for (int i = 0; i < NUM_THREADS; i++) {
- 
-		m_RaycastingThreads[i] = std::thread(
+
+		m_ThreadPool.Do(i,
 			[this, camera, cameraDir, cameraRight, pixels, begin, end] {
 
 				Ray ray;
@@ -70,7 +91,7 @@ void Raycaster::Update(const Camera& camera)
 						float lineHeight = m_Height / normalizedDist;
 						float step = 16.0f / (float)lineHeight;
 						float texOffset = 0.0f;
-						
+
 						//bounds checking instead of clamping
 						//if (lineHeight > m_Height) {
 						//	texOffset = (float)(lineHeight - m_Height) / 2.0f;
@@ -80,7 +101,7 @@ void Raycaster::Update(const Camera& camera)
 						float lineOffset = (m_Height - lineHeight) / 2;
 
 						lineOffset += camera.Pitch;
-						
+
 
 						float wallX = 0;
 						if (hit.Side == 0)
@@ -103,17 +124,40 @@ void Raycaster::Update(const Camera& camera)
 							float colorMod = -FALLOFF * hit.Distance + 1;
 							if (colorMod < 0) colorMod = 0;
 
-							for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
+							if (lineOffset >= 0) {
 
-								uint32_t color = texture.PixelAt((int)texX, (int)texY);
-								//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
-								color = Util::MultiplyRGBA(color, colorMod);
+								for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
 
-								if (j < m_Height && j >= 0)
-									pixels[j * m_Width + i + (m_Width / 2)] = color;
+									uint32_t color = texture.PixelAt((int)texX, (int)texY);
+									//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
+									color = Util::MultiplyRGBA(color, colorMod);
 
-								texY += step;
-								texY = std::min(std::max(texY, 0.0f), (float)TEX_SIZE - 1);
+									if (j < m_Height && j >= 0)
+										pixels[j * m_Width + i + (m_Width / 2)] = color;
+
+									texY += step;
+									texY = std::min(std::max(texY, 0.0f), (float)TEX_SIZE - 1);
+
+								}
+							}
+							else {
+
+								int diff = glm::abs(lineOffset);
+								texY += step * diff;
+
+								for (int j = 0; j <= m_Height; j++) {
+
+									uint32_t color = texture.PixelAt((int)texX, (int)texY);
+									//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
+									color = Util::MultiplyRGBA(color, colorMod);
+
+									if (j < m_Height && j >= 0)
+										pixels[j * m_Width + i + (m_Width / 2)] = color;
+
+									texY += step;
+									texY = std::min(std::max(texY, 0.0f), (float)TEX_SIZE - 1);
+
+								}
 
 							}
 						}
@@ -180,24 +224,29 @@ void Raycaster::Update(const Camera& camera)
 
 
 				}
+
 			}
 		);
- 
+
 		begin += division;
 		end += division;
 
 
 	}
-	for (int i = 0; i < NUM_THREADS; i++) {
-		m_RaycastingThreads[i].join();
+	
+	while (!m_ThreadPool.Complete()) {
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 	}
+}
 
-#else
-
+void Raycaster::RaycastSingle(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels)
+{
 	Ray ray;
 	ray.Start = camera.Position;
 
 	for (int i = -m_Width / 2; i < m_Width / 2; i++) {
+
+		if (m_TerminateThreads) return;
 
 		ray.Direction = glm::normalize(cameraDir + cameraRight * ((float)i / (float)m_Width));
 		RaycastHit hit = m_World->CastRay(ray);
@@ -212,17 +261,19 @@ void Raycaster::Update(const Camera& camera)
 			m_ZBuffer[i + m_Width / 2] = normalizedDist;
 
 			float lineHeight = m_Height / normalizedDist;
-
 			float step = 16.0f / (float)lineHeight;
 			float texOffset = 0.0f;
 
-			if (lineHeight > m_Height) {
-				texOffset = (float)(lineHeight - m_Height) / 2.0f;
-				lineHeight = m_Height;
-			}
+			//bounds checking instead of clamping
+			//if (lineHeight > m_Height) {
+			//	texOffset = (float)(lineHeight - m_Height) / 2.0f;
+			//	lineHeight = m_Height;
+			//}
+
 			float lineOffset = (m_Height - lineHeight) / 2;
 
-			float texY = texOffset * step;
+			lineOffset += camera.Pitch;
+
 
 			float wallX = 0;
 			if (hit.Side == 0)
@@ -231,30 +282,65 @@ void Raycaster::Update(const Camera& camera)
 				wallX = hit.HitPos.x;
 			wallX -= glm::floor(wallX);
 
-			int texX = (int)(wallX * (float)TEX_SIZE);
+			if (-FALLOFF * hit.Distance + 1 > 0) {
 
-			if (hit.Side == 0 && ray.Direction.x > 0)
-				texX = TEX_SIZE - 1 - texX;
-			if (hit.Side == 1 && ray.Direction.y < 0)
-				texX = TEX_SIZE - 1 - texX;
+				float texY = texOffset * step;
 
-			float colorMod = -FALLOFF * hit.Distance + 1;
-			if (colorMod < 0) colorMod = 0;
+				int texX = (int)(wallX * (float)TEX_SIZE);
 
-			for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
+				if (hit.Side == 0 && ray.Direction.x > 0)
+					texX = TEX_SIZE - 1 - texX;
+				if (hit.Side == 1 && ray.Direction.y < 0)
+					texX = TEX_SIZE - 1 - texX;
 
-				uint32_t color = texture.PixelAt((int)texX, (int)texY);
-				//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
-				color = Util::MultiplyRGBA(color, colorMod);
+				float colorMod = -FALLOFF * hit.Distance + 1;
+				if (colorMod < 0) colorMod = 0;
 
-				pixels[j * m_Width + i + (m_Width / 2)] = color;
+				if (lineOffset >= 0) {
 
-				texY += step;
-				texY = glm::clamp(texY, 0.0f, (float)TEX_SIZE - 1);
+					for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
 
+						uint32_t color = texture.PixelAt((int)texX, (int)texY);
+						//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
+						color = Util::MultiplyRGBA(color, colorMod);
+
+
+						pixels[j * m_Width + i + (m_Width / 2)] = color;
+
+						texY += step;
+						texY = std::min(std::max(texY, 0.0f), (float)TEX_SIZE - 1);
+						
+					}
+				}
+				else {
+
+					int diff = glm::abs(lineOffset);
+					texY += step * diff;
+
+					for (int j = 0; j <= m_Height; j++) {
+
+						uint32_t color = texture.PixelAt((int)texX, (int)texY);
+						//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
+						color = Util::MultiplyRGBA(color, colorMod);
+
+						pixels[j * m_Width + i + (m_Width / 2)] = color;
+
+						texY += step;
+						texY = std::min(std::max(texY, 0.0f), (float)TEX_SIZE - 1);
+
+					}
+
+				}
 			}
-
+			else {
+				for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
+					if (j < m_Height && j >= 0)
+						pixels[j * m_Width + i + (m_Width / 2)] = 0x000000ff;
+				}
+			}
 			/* --floor-- */
+
+			//thanks to lodev for help with this!
 
 			float floorXWall, floorYWall;
 
@@ -281,53 +367,45 @@ void Raycaster::Update(const Camera& camera)
 			float distWall = normalizedDist;
 
 			for (int j = offset + 1; j < m_Height; j++) {
-				float currentDist = m_Height / (2.0f * j - m_Height);
-				float weight = currentDist / distWall;
+				if (j < m_Height && j >= 0) {
+					float currentDist = m_Height / (2.0 * (j - camera.Pitch) - m_Height);
 
-				float currentFloorX = weight * floorXWall + (1.0f - weight) * camera.Position.x;
-				float currentFloorY = weight * floorYWall + (1.0f - weight) * camera.Position.y;
+					float weight = currentDist / distWall;
 
-				int floorTexX = (int)(currentFloorX * TEX_SIZE) % TEX_SIZE;
-				int floorTexY = (int)(currentFloorY * TEX_SIZE) % TEX_SIZE;
+					float currentFloorX = weight * floorXWall + (1.0f - weight) * camera.Position.x;
+					float currentFloorY = weight * floorYWall + (1.0f - weight) * camera.Position.y;
 
-				float floorColorMod = -FALLOFF * currentDist + 1;
+					int floorTexX = (int)(currentFloorX * TEX_SIZE) % TEX_SIZE;
+					int floorTexY = (int)(currentFloorY * TEX_SIZE) % TEX_SIZE;
 
-				uint32_t color = texture.PixelAt(floorTexX, floorTexY);
-				color = Util::MultiplyRGBA(color, floorColorMod);
-				pixels[j * m_Width + i + (m_Width / 2)] = color;
+					float floorColorMod = -FALLOFF * currentDist + 1;
+
+					uint32_t color = texture.PixelAt(floorTexX, floorTexY);
+					color = Util::MultiplyRGBA(color, floorColorMod);
+					pixels[j * m_Width + i + (m_Width / 2)] = color;
+				}
 			}
 
 			for (int j = 0; j < lineOffset; j++) {
-				pixels[j * m_Width + i + (m_Width / 2)] = 0x000000ff;
+				if (j < m_Height && j >= 0)
+					pixels[j * m_Width + i + (m_Width / 2)] = 0x000000ff;
 			}
+
 		}
+
+
 	}
+}
 
-#endif
-	/* --sprites-- */
-
+void Raycaster::DrawSprites(const Camera& camera, uint32_t* pixels)
+{
 	for (const Sprite& sprite : m_World->GetSpritesSorted(camera)) {
-		
+
 		sprite.Draw(m_Renderer, camera, pixels, m_ZBuffer);
 	}
-
-	/* --draw to screen-- */
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(m_Renderer.GetRenderer(), surface);
-	m_Renderer.Blit(texture);
-
-	SDL_DestroyTexture(texture);
-	m_Renderer.Present();
-
 }
 
 Raycaster::~Raycaster()
 {
-	m_TerminateThreads = true;
-
-	for (int i = 0; i < NUM_THREADS; i++)
-		if (m_RaycastingThreads[i].joinable()) 
-			m_RaycastingThreads[i].join();
- 
 	delete[] m_ZBuffer;
 }

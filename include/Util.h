@@ -25,6 +25,9 @@ namespace Util {
         if (value <= 0)
             return 0x000000ff;
 
+        if (value == 1.0f)
+            return RGBA;
+
         uint32_t r = (RGBA & 0xff000000) * value;
         uint32_t g = (RGBA & 0x00ff0000) * value;
         uint32_t b = (RGBA & 0x0000ff00) * value;

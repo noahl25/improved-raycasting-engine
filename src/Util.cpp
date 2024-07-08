@@ -9,7 +9,7 @@ namespace Util {
 
     uint32_t AsUInt32(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
-        uint32_t color = 0;
+        uint32_t color = 0x0;
         color |= (r << 24);
         color |= (g << 16);
         color |= (b << 8);
