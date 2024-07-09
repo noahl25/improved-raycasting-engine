@@ -400,7 +400,7 @@ void Raycaster::RaycastSingle(const Camera camera, uint32_t* pixels)
 	}
 }
 
-void Raycaster::DrawSprites(const Camera& camera, uint32_t* pixels)
+void Raycaster::DrawSprites(const Camera camera, uint32_t* pixels)
 {
 	for (const Sprite& sprite : m_World->GetSpritesSorted(camera)) {
 
