@@ -29,9 +29,9 @@ public:
 private:
 
 
-	void RaycastMT(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels);
-	void RaycastSingle(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels);
-	void DrawSprites(const Camera& camera, uint32_t* pixels);
+	void RaycastMT(const Camera camera, uint32_t* pixels);
+	void RaycastSingle(const Camera camera, uint32_t* pixels);
+	void DrawSprites(const Camera camera, uint32_t* pixels);
 
 	int m_Width, m_Height;
 	Renderer m_Renderer;
