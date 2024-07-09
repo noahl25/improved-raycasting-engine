@@ -32,19 +32,16 @@ void Raycaster::Update(const Camera camera)
  
 	m_Renderer.Clear();
 
-	glm::vec2 cameraDir = glm::normalize(glm::vec2(glm::cos(glm::radians(camera.Yaw)), glm::sin(glm::radians(camera.Yaw))));
-	glm::vec2 cameraRight = glm::normalize(glm::vec2(-glm::sin(glm::radians(camera.Yaw)), glm::cos(glm::radians(camera.Yaw))));
-
 	static SDL_Surface* surface = SDL_CreateRGBSurface(0, m_Width, m_Height, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
 	uint32_t* pixels = static_cast<uint32_t*>(surface->pixels);
 
 #if MULTITHREADED
 	
-	RaycastMT(camera, cameraDir, cameraRight, pixels);
+	RaycastMT(camera, pixels);
 
 #else
 
-	RaycastSingle(camera, cameraDir, cameraRight, pixels);
+	RaycastSingle(camera, pixels);
 	 
 #endif
 
@@ -58,8 +55,11 @@ void Raycaster::Update(const Camera camera)
 
 }
 
-void Raycaster::RaycastMT(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels)
+void Raycaster::RaycastMT(const Camera camera, uint32_t* pixels)
 {
+	const glm::vec2 cameraDir = glm::normalize(glm::vec2(glm::cos(glm::radians(camera.Yaw)), glm::sin(glm::radians(camera.Yaw))));
+	const glm::vec2 cameraRight = glm::normalize(glm::vec2(-glm::sin(glm::radians(camera.Yaw)), glm::cos(glm::radians(camera.Yaw))));
+	
 	int division = m_Width / NUM_THREADS;
 	int begin = -m_Width / 2;
 	int end = begin + division;
@@ -239,8 +239,11 @@ void Raycaster::RaycastMT(const Camera camera, const glm::vec2 cameraDir, const 
 	}
 }
 
-void Raycaster::RaycastSingle(const Camera camera, const glm::vec2 cameraDir, const glm::vec2 cameraRight, uint32_t* pixels)
+void Raycaster::RaycastSingle(const Camera camera, uint32_t* pixels)
 {
+	const glm::vec2 cameraDir = glm::normalize(glm::vec2(glm::cos(glm::radians(camera.Yaw)), glm::sin(glm::radians(camera.Yaw))));
+	const glm::vec2 cameraRight = glm::normalize(glm::vec2(-glm::sin(glm::radians(camera.Yaw)), glm::cos(glm::radians(camera.Yaw))));
+	
 	Ray ray;
 	ray.Start = camera.Position;
 
