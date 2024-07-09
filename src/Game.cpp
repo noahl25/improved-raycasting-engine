@@ -50,7 +50,7 @@ void Game::Run()
 void Game::HandleEvents()
 {
  
-	const float moveSpeed = 0.5f;
+	const float moveSpeed = 8.0f;
 	const float lookSpeedX = 0.5f;
 	const float lookSpeedY = 8.0f;
  
@@ -92,9 +92,9 @@ void Game::HandleEvents()
 		nextMove *= m_DeltaTime;
 
 		if (!m_World.Collision((int)(m_Camera.Position.x + nextMove.x * 5), (int)m_Camera.Position.y))
-			m_Camera.Position.x += nextMove.x;
+			m_Camera.Position.x = Util::Lerp(m_Camera.Position.x, m_Camera.Position.x + nextMove.x, m_DeltaTime * 3.0f);
 		if (!m_World.Collision((int)m_Camera.Position.x, (int)(m_Camera.Position.y + nextMove.y * 5)))
-			m_Camera.Position.y += nextMove.y;
+			m_Camera.Position.y = Util::Lerp(m_Camera.Position.y, m_Camera.Position.y + nextMove.y, m_DeltaTime * 3.0f);
 
 	}
 
