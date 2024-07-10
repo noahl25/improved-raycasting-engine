@@ -3,6 +3,7 @@
 #include <SDL.h>
 
 #include "Raycaster.h"
+#include "Globals.h"
 
 class Game
 {

@@ -4,6 +4,9 @@ Game::Game(int width, int height)
 	: m_Width(width), m_Height(height), m_Raycaster(width, height)
 {
 
+	Globals::CurrentGameHeight = m_Height;
+	Globals::CurrentGameWidth = m_Width;
+
 	m_Window = SDL_CreateWindow("The Escape", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_Width, m_Height, NULL);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -50,7 +53,7 @@ void Game::Run()
 void Game::HandleEvents()
 {
  
-	const float moveSpeed = 8.0f;
+	const float moveSpeed = 0.25f;
 	const float lookSpeedX = 0.5f;
 	const float lookSpeedY = 8.0f;
  
@@ -91,10 +94,10 @@ void Game::HandleEvents()
 		nextMove *= moveSpeed;
 		nextMove *= m_DeltaTime;
 
-		if (!m_World.Collision((int)(m_Camera.Position.x + nextMove.x * 5), (int)m_Camera.Position.y))
-			m_Camera.Position.x = Util::Lerp(m_Camera.Position.x, m_Camera.Position.x + nextMove.x, m_DeltaTime * 3.0f);
-		if (!m_World.Collision((int)m_Camera.Position.x, (int)(m_Camera.Position.y + nextMove.y * 5)))
-			m_Camera.Position.y = Util::Lerp(m_Camera.Position.y, m_Camera.Position.y + nextMove.y, m_DeltaTime * 3.0f);
+		if (!m_World.Collision((int)(m_Camera.Position.x + nextMove.x * 4), (int)m_Camera.Position.y))
+			m_Camera.Position.x = m_Camera.Position.x + nextMove.x;
+		if (!m_World.Collision((int)m_Camera.Position.x, (int)(m_Camera.Position.y + nextMove.y * 4)))
+			m_Camera.Position.y = m_Camera.Position.y + nextMove.y;
 
 	}
 

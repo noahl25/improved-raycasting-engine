@@ -58,7 +58,7 @@ void Sprite::Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixe
 
     int move = glm::round(m_Height / transformY) + camera.Pitch;
 
-	int spriteScreenX = (int)((renderer.GetWidth() / 2) * (1 + transformX / transformY));
+	int spriteScreenX = glm::round((renderer.GetWidth() / 2.0f) * (1 + transformX / transformY));
 
     int spriteHeight = glm::round(glm::abs((int)(renderer.GetHeight() / (transformY))) / m_Scale);
  
@@ -69,12 +69,12 @@ void Sprite::Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixe
 
  
     int spriteWidth = glm::round(glm::abs((int)(renderer.GetHeight() / (transformY))) / m_Scale);
-    int drawStartX = -spriteWidth / 2 + spriteScreenX;
+    int drawStartX = -spriteWidth / 2.0f + spriteScreenX;
     int drawEndX = spriteWidth / 2 + spriteScreenX;
  
     for (int stripe = drawStartX; stripe < drawEndX; stripe++)
     {
-        int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * tex.GetWidth() / spriteWidth) / 256;
+        int texX = glm::round(glm::round(256.0f * (stripe - (-spriteWidth / 2.0f + spriteScreenX)) * tex.GetWidth() / spriteWidth) / 256.0f);
  
         if (transformY > 0 && stripe > 0 && stripe < renderer.GetWidth() && transformY < zBuffer[stripe]) {
             for (int y = (drawStartY < 0 ? 0 : drawStartY); y < (drawEndY >= renderer.GetHeight() ? renderer.GetHeight() : drawEndY); y++) 

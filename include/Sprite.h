@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "Globals.h"
 
 struct Sprite {
 public:
@@ -27,7 +28,7 @@ public:
 	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
 	inline void SetScale(float scale) { 
 		m_Scale = scale; 
-		m_Height = (scale - 1) * m_SpriteHeight * 12;
+		m_Height = (scale - 1) * m_SpriteHeight * Globals::CurrentGameHeight * 0.015f;
 	}
 
 	//rather than raycasting to see what sprites are on crosshair, simply check when drawing to see if any pixels overlap with the center
