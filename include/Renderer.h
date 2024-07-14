@@ -13,7 +13,7 @@ public:
 	Renderer(int width, int height);
 	~Renderer();
 
-	void Init(SDL_Renderer* renderer);
+	void Init(SDL_Window* window);
 
 	void Present() const;
 	void Clear(const glm::vec4& color = glm::vec4(0.0f)) const;

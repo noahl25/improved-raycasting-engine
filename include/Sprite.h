@@ -10,11 +10,14 @@
 #include "Texture.h"
 #include "Globals.h"
 
-struct Sprite {
+class Sprite {
 public:
 
 	Sprite();
-	Sprite(const Sprite& other) = default;
+	Sprite(const Sprite& other);
+	Sprite(Sprite&& other);
+	Sprite& operator=(const Sprite& other);
+	Sprite& operator=(Sprite&& other);
 	Sprite(const glm::vec3& position);
 	~Sprite();
 
@@ -28,8 +31,10 @@ public:
 	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
 	inline void SetScale(float scale) { 
 		m_Scale = scale; 
-		m_Height = (scale - 1) * m_SpriteHeight * Globals::CurrentGameHeight * 0.015f;
+		if (m_Grounded)
+			m_HeightOffset = scale * Globals::CurrentGameHeight * 0.12;
 	}
+	inline void SetHeightOffset(float offset) { m_HeightOffset = offset;  }
 
 	//rather than raycasting to see what sprites are on crosshair, simply check when drawing to see if any pixels overlap with the center
 	static inline Sprite* HoveredSprite = nullptr;
@@ -39,13 +44,20 @@ private:
 
 	glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
 	bool m_Active = true;
-	float m_Scale = 1;
-	float m_Height = 0.0f;
+	bool m_Grounded = true;
+	float m_Scale = 1.0f;
+	float m_HeightOffset = 0.0f;
 	int m_TextureKey;
 	int m_SpriteWidth, m_SpriteHeight;
 
-	static inline const float FALLOFF = 0.23f;
+	uint32_t* m_ModificationTable = nullptr;
+
+	static inline const float m_Falloff = 0.23f;
 	static inline const std::hash<std::string> m_StringHash;
 	static inline std::unordered_map<int, Texture> m_TextureAtlas;
+
+private:
+
+	void CopyBasicMembers(Sprite& first, const Sprite& second);
 
 };

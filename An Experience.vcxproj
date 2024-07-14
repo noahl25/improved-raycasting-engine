@@ -183,9 +183,15 @@
     <ClInclude Include="vendor\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\maps\map1.png" />
+    <Image Include="res\maps\map1_sprites.png" />
+    <Image Include="res\maps\map1_room.png" />
     <Image Include="res\sprites\barrel.png" />
     <Image Include="res\textures\cobble.png" />
+    <Image Include="res\textures\weirdcobble.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\maps\config_sprites.txt" />
+    <Text Include="res\maps\config_room.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

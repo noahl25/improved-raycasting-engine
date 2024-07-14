@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <SDL_image.h> 
 #include <algorithm>
+#include <sstream>
+#include <fstream>
 
 #include "Sprite.h"
 #include "Ray.h"
@@ -16,11 +17,12 @@ public:
 	
 	~World();
 
-	void LoadWorld(const char* path);
+	void LoadRoom(const char* path, const char* config);
+	void LoadSprites(const char* path, const char* config);
 	RaycastHit CastRay(const Ray& ray);
 
 	inline bool Collision(int x, int y) {
-		if (m_Map[y * m_MapWidth + x] == 1)
+		if (m_Room[y * m_MapWidth + x] == 1)
 			return true;
 		return false;
 	}
@@ -36,12 +38,9 @@ public:
 
 private:
 
-	enum Tile {
-
-	};
-
 	std::vector<Sprite> m_Sprites;
-	std::vector<int> m_Map;
+	std::vector<int> m_Room;
+	std::unordered_map<int, Texture> m_RoomTextureAtlas;
 
 	int m_MapWidth, m_MapHeight;
 

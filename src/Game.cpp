@@ -14,7 +14,8 @@ Game::Game(int width, int height)
 	m_Raycaster.Init(m_Window);
 	m_Raycaster.SetActiveWorld(&m_World);
 
-	m_World.LoadWorld("res/maps/map1.png");
+	m_World.LoadRoom("res/maps/map1_room.png", "res/maps/config_room.txt");
+	m_World.LoadSprites("res/maps/map1_sprites.png", "res/maps/config_sprites.txt");
 
 	m_Camera.Position = m_World.GetStartingPos();
 
@@ -42,6 +43,7 @@ void Game::Run()
 
 			frameTime = SDL_GetTicks() - frameStart;
 			m_DeltaTime = frameTime / 1000.0f;
+			//printf("%f\n", m_DeltaTime);
 
 		}
 
@@ -53,7 +55,7 @@ void Game::Run()
 void Game::HandleEvents()
 {
  
-	const float moveSpeed = 0.25f;
+	const float moveSpeed = 0.35f;
 	const float lookSpeedX = 0.5f;
 	const float lookSpeedY = 8.0f;
  
@@ -108,6 +110,7 @@ void Game::Update()
 {
  
 	m_Raycaster.Update(m_Camera);
+
 
 }
 

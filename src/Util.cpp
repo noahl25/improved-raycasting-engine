@@ -29,16 +29,4 @@ namespace Util {
         return (r << 24) | (g << 16) | (b << 8) | a;
  
     }
-
-    void memcpy_reverse(void* dest, const void* src, int size)
-    {
-        unsigned char* d = (unsigned char*)dest;
-        const unsigned char* s = (const unsigned char*)src;
-
-        for (size_t i = 0; i < size; i++) {
-            d[i] = s[size - 1 - i];
-        }
-    }
-    
-
 };

@@ -1,0 +1,12 @@
+// begin a new sprite config with 'SPRITE'
+// seperate features with a new line
+// features should be declared as "feature:value"
+// avaliable features:
+//  color - necessary, color of the sprite on sprite map
+//  texture - necessary, texture path of sprite
+//  scale - sprite scale (bigger # for smaller sprite)
+
+SPRITE
+color:0x00ff00ff
+texture:res/sprites/barrel.png
+scale:2

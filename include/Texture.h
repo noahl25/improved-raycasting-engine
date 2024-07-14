@@ -19,12 +19,13 @@ public:
 
 	glm::vec4 PixelAtVec(int x, int y) const;
 
+	void SetTexture(const char* path);
+
 	inline uint32_t PixelAt(int x, int y) const {
 		return m_LookupTable[y * m_Width + x];
 	}
 
-	void SetTexture(const char* path);
-
+	inline const uint32_t* GetPixels() const { return m_LookupTable; }
 	inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
 

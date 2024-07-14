@@ -86,16 +86,29 @@
     <ClInclude Include="include\SizedThreadPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cobble.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\maps\map1.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\sprites\barrel.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\maps\map1_room.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\maps\map1_sprites.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\weirdcobble.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\maps\config_sprites.txt" />
+    <Text Include="res\maps\config_room.txt" />
   </ItemGroup>
 </Project>

@@ -6,9 +6,10 @@ Renderer::Renderer(int width, int height)
 
 }
 
-void Renderer::Init(SDL_Renderer* renderer) {
-	assert(renderer != nullptr);
-	m_Renderer = renderer;
+void Renderer::Init(SDL_Window* window) {
+	assert(window != nullptr);
+	m_Renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+	assert(m_Renderer != nullptr);
 	m_ActiveRenderer = m_Renderer;
 }
 

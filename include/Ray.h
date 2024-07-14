@@ -8,6 +8,8 @@ struct Ray {
 };
 
 
+class Texture;
+
 struct RaycastHit {
 	glm::vec2 HitPos;
 	float Distance;
@@ -15,5 +17,5 @@ struct RaycastHit {
 	int MapX, MapY;
 	bool Hit = false;
 	int Side;
-	Ray From;
+	const Texture* TextureHit = nullptr;
 }; 

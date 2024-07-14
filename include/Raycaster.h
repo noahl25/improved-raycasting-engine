@@ -13,7 +13,6 @@
 #include "Texture.h"
 #include "SizedThreadPool.h"
 
-#define MULTITHREADED true
 
 class Raycaster {
 
@@ -30,7 +29,6 @@ private:
 
 
 	void RaycastMT(const Camera camera, uint32_t* pixels);
-	void RaycastSingle(const Camera camera, uint32_t* pixels);
 	void DrawSprites(const Camera camera, uint32_t* pixels);
 
 	int m_Width, m_Height;
@@ -42,16 +40,11 @@ private:
 	
 	bool m_TerminateThreads = false;
 
-	static inline const int TEX_SIZE = 16;
 	static inline const float FALLOFF = 0.23f;
 
-#ifdef MULTITHREADED
-
-	static inline const int NUM_THREADS = 3;
+	static constexpr int NUM_THREADS = 4;
 
 	SizedThreadPool<NUM_THREADS> m_ThreadPool;
-
-#endif
 
 
 };

@@ -1,0 +1,26 @@
+// begin a new config with WALL FLOOR or STARTING_POS
+// seperate features with a new line
+// features should be declared as "feature:value"
+// WALL
+//  color - color present in map
+//  texture - texture assigned to color
+// FLOOR
+//  color - color present in map
+//  texture - texture assigned to color
+// STARTING_POS (only one should be defined)
+//  color - color of player starting position on map
+
+WALL
+color:0x000000ff
+texture:res/textures/cobble.png
+
+WALL
+color:0x0000ffff
+texture:res/textures/weirdcobble.png
+
+FLOOR
+color:0xffffffff
+texture:res/textures/cobble.png
+
+STARTING_POS
+color:0xff0000ff
