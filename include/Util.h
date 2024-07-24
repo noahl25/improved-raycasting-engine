@@ -8,10 +8,18 @@
 #define EXPAND_UINT32(uint32) \
     ((uint8_t)((uint32) >> 24)), ((uint8_t)((uint32) >> 16)), ((uint8_t)((uint32) >> 8)), ((uint8_t)((uint32) >> 0))
 
+#define DO_ONCE(code) \
+    { static bool executed = false; if (!executed) { code; executed = true; } } 
+
+#define FIELD(storage, field) &storage::field
+
 namespace Util {
 	uint32_t AsUInt32(const glm::vec4& color);
 	uint32_t AsUInt32(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	uint32_t AGBRtoRGBA(uint32_t ABGR);
+
+    template <typename First, typename Second>
+    static constexpr bool is_different_v = !std::is_same_v<First, Second>;
 
     inline void memcpy_reverse(void* dest, const void* src, int size) {
         unsigned char* d = (unsigned char*)dest;
@@ -55,5 +63,11 @@ namespace Util {
             componentsDest[i] = components[i] * value;
         }
 
+    }
+
+    inline bool InRange(int number, int low, int high) {
+        if ((unsigned)(number - low) <= high - low)
+            return true;
+        return false;
     }
 }

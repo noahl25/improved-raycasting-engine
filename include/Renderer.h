@@ -21,6 +21,10 @@ public:
 	void Rect(const SDL_Rect& rect, const glm::vec4& color = glm::vec4(1.0f)) const;
 	void Line(const glm::vec2& first, const glm::vec2& second, const glm::vec4& color = glm::vec4(1.0f)) const;
 	void Texture(SDL_Texture* texture, const SDL_Rect* dest, const SDL_Rect* src = NULL) const;
+	uint32_t* CreateRenderingSurface();
+	inline uint32_t* GetRenderingSurface() const { return m_SurfacePixels; }
+	void BlitRenderingSurface() const;
+	void BlitToRenderingSurface(SDL_Surface* surface, SDL_Rect& rect) const;
 
 	inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
@@ -31,11 +35,13 @@ public:
 
 private:
 
-	SDL_Renderer* m_Renderer;
-
+	SDL_Renderer* m_Renderer = nullptr;
+	SDL_Surface* m_RenderingSurface = nullptr;
+	uint32_t* m_SurfacePixels = nullptr;
 	int m_Width, m_Height;
 
 	static inline SDL_Renderer* m_ActiveRenderer = nullptr;
+
 
 };
 

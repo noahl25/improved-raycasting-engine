@@ -21,7 +21,7 @@ public:
 	void LoadSprites(const char* path, const char* config);
 	RaycastHit CastRay(const Ray& ray);
 
-	inline bool Collision(int x, int y) {
+	inline bool Collision(int x, int y) const {
 		if (m_Room[y * m_MapWidth + x] == 1)
 			return true;
 		return false;
@@ -35,12 +35,16 @@ public:
 		return m_Sprites;
 	}
 	inline const glm::vec2& GetStartingPos() const { return m_PlayerStartingPos; }
+	inline const Texture& GetTextureAtPos(int x, int y) { 
+		return m_RoomTextureAtlas[m_Room[y * m_MapWidth + x]];
+	}
 
 private:
 
 	std::vector<Sprite> m_Sprites;
 	std::vector<int> m_Room;
-	std::unordered_map<int, Texture> m_RoomTextureAtlas;
+	//1-15 for walls 16-30 for floors
+	Texture m_RoomTextureAtlas[30];
 
 	int m_MapWidth, m_MapHeight;
 

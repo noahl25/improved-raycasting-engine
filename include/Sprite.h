@@ -4,20 +4,20 @@
 #include <SDL_image.h>
 #include <glm/glm.hpp>
 #include <unordered_map>
+#include <string>
 
 #include "Renderer.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "Globals.h"
 
 class Sprite {
 public:
 
 	Sprite();
 	Sprite(const Sprite& other);
-	Sprite(Sprite&& other);
+	Sprite(Sprite&& other) noexcept;
 	Sprite& operator=(const Sprite& other);
-	Sprite& operator=(Sprite&& other);
+	Sprite& operator=(Sprite&& other) noexcept;
 	Sprite(const glm::vec3& position);
 	~Sprite();
 
@@ -29,15 +29,11 @@ public:
 	inline void Kill() { m_Active = false; }
 	inline const glm::vec3& GetPosition() const { return m_Position; }
 	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
-	inline void SetScale(float scale) { 
-		m_Scale = scale; 
-		if (m_Grounded)
-			m_HeightOffset = scale * Globals::CurrentGameHeight * 0.12;
-	}
+	inline void SetScale(float scale) { m_Scale = scale; }
 	inline void SetHeightOffset(float offset) { m_HeightOffset = offset;  }
 
 	//rather than raycasting to see what sprites are on crosshair, simply check when drawing to see if any pixels overlap with the center
-	static inline Sprite* HoveredSprite = nullptr;
+	static inline const Sprite* HoveredSprite = nullptr;
 	static inline float HoveredSpriteDistance = 0.0f;
 
 private:

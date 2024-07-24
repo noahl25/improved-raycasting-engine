@@ -23,7 +23,7 @@ void Texture::SetTexture(const char* path)
 	int channels;
 
 	unsigned char* data = stbi_load(path, &m_Width, &m_Height, &channels, 4);
-	if (data == NULL) __debugbreak();
+	if (data == NULL || (m_Width & (m_Width - 1) != 0) || (m_Height & (m_Height - 1) != 0)) __debugbreak();
 
 	if (m_LookupTable != nullptr)
 		delete[] m_LookupTable;

@@ -45,6 +45,15 @@
     <ClCompile Include="src\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ThreadPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UIComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Renderer.h">
@@ -83,10 +92,13 @@
     <ClInclude Include="include\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\SizedThreadPool.h">
+    <ClInclude Include="include\ThreadPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Globals.h">
+    <ClInclude Include="include\UI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UIComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -110,5 +122,9 @@
   <ItemGroup>
     <Text Include="res\maps\config_sprites.txt" />
     <Text Include="res\maps\config_room.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="res\fonts\PressStart2P-Regular.ttf" />
+    <Font Include="res\fonts\PixelifySans-Regular.ttf" />
   </ItemGroup>
 </Project>

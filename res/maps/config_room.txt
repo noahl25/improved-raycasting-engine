@@ -2,13 +2,14 @@
 // seperate features with a new line
 // features should be declared as "feature:value"
 // WALL
-//  color - color present in map
-//  texture - texture assigned to color
+//  color - required, color present in map
+//  texture - required, texture assigned to color
 // FLOOR
-//  color - color present in map
-//  texture - texture assigned to color
+//  color - required, color present in map
+//  texture - required, texture assigned to color
 // STARTING_POS (only one should be defined)
-//  color - color of player starting position on map
+//  color - required, color of player starting position on map
+//  texture - required, floor texture under player starting pos
 
 WALL
 color:0x000000ff
@@ -22,5 +23,10 @@ FLOOR
 color:0xffffffff
 texture:res/textures/cobble.png
 
+FLOOR
+color:0x00ff00ff
+texture:res/textures/weirdcobble.png
+
 STARTING_POS
 color:0xff0000ff
+texture:res/textures/cobble.png

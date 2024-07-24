@@ -39,9 +39,11 @@ void World::LoadRoom(const char* path, const char* config)
 	};
 
 	int wallTextureID = 1;
-	int floorTextureID = -1;
+	int floorTextureID = 16;
 	std::unordered_map<uint32_t, int> m_IDAtlas;
+
 	uint32_t startingPosColor;
+	int underPlayerTexture;
 	
 	for (int i = 0; i < configs.size(); i++) {
 		std::stringstream config(configs[i]);
@@ -61,7 +63,7 @@ void World::LoadRoom(const char* path, const char* config)
 
 		while (std::getline(config, feature, '\n')) {
 
-			if (status == PARSING_WALL) {
+			if (status == PARSING_WALL || status == PARSING_FLOOR) {
 				if (feature.find(':') != std::string::npos) {
 					std::string key = feature.substr(0, feature.find(':'));
 					std::string value = feature.substr(feature.find(':') + 1);
@@ -70,26 +72,33 @@ void World::LoadRoom(const char* path, const char* config)
 						uint32_t color;
 						ss << std::hex << value;
 						ss >> color;
-						m_IDAtlas[color] = wallTextureID;
+						m_IDAtlas[color] = status == PARSING_WALL ? wallTextureID : floorTextureID;
 					}
 					else if (key == "texture") {
-						m_RoomTextureAtlas[wallTextureID] = Texture(value.c_str());
+						m_RoomTextureAtlas[status == PARSING_WALL ? wallTextureID : floorTextureID] = Texture(value.c_str());
 					}
 				}
 			}
 
 			if (status == PARSING_STARTINGPOS) {
+				std::string key = feature.substr(0, feature.find(':'));
 				std::string value = feature.substr(feature.find(':') + 1);
-				std::stringstream ss;
-				ss << std::hex << value;
-				ss >> startingPosColor;
+				if (key == "color") {
+					std::stringstream ss;
+					ss << std::hex << value;
+					ss >> startingPosColor;
+				}
+				else if (key == "texture") {
+					m_RoomTextureAtlas[floorTextureID] = Texture(value.c_str());
+					underPlayerTexture = floorTextureID;
+				}
 			}
 
 		}
 
 		if (status == PARSING_WALL)
 			wallTextureID++;
-		else if (status == PARSING_FLOOR)
+		else if (status == PARSING_FLOOR || status == PARSING_STARTINGPOS)
 			floorTextureID++;
 
 	}
@@ -105,7 +114,7 @@ void World::LoadRoom(const char* path, const char* config)
 		}
 	}
 
-
+	m_Room[(int)m_PlayerStartingPos.y * m_MapWidth + (int)m_PlayerStartingPos.x] = underPlayerTexture;
 
 }
  
@@ -142,6 +151,10 @@ void World::LoadSprites(const char* path, const char* config)
 			}
 			else if (key == "texture") {
 				sprite.SetTexture(Renderer::GetActiveRenderer(), {value.begin(), value.end()});
+			}
+			else if (key == "offset") {
+				std::string str = { value.begin(), value.end() };
+				sprite.SetHeightOffset(std::stoi(str));
 			}
 			else if (key == "scale") {
 				float scale;
@@ -231,7 +244,7 @@ RaycastHit World::CastRay(const Ray& ray)
 
 		if (mapCheck.x >= 0 && mapCheck.x < m_MapWidth && mapCheck.y >= 0 && mapCheck.y < m_MapHeight)
 		{
-			if (m_Room[mapCheck.y * m_MapWidth + mapCheck.x] > 0)
+			if (m_Room[mapCheck.y * m_MapWidth + mapCheck.x] <= 15)
 			{
 				tileFound = true;
 			}

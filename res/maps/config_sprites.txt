@@ -2,11 +2,13 @@
 // seperate features with a new line
 // features should be declared as "feature:value"
 // avaliable features:
-//  color - necessary, color of the sprite on sprite map
-//  texture - necessary, texture path of sprite
+//  color - required, color of the sprite on sprite map
+//  texture - required, texture path of sprite
 //  scale - sprite scale (bigger # for smaller sprite)
+//  offset - height offset
 
 SPRITE
 color:0x00ff00ff
 texture:res/sprites/barrel.png
 scale:2
+offset:200

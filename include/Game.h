@@ -1,9 +1,10 @@
 #pragma once
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "Raycaster.h"
-#include "Globals.h"
+#include "UI.h"
 
 class Game
 {
@@ -17,14 +18,20 @@ public:
 private:
 
 	void HandleEvents();
-	void Update();
+	void Render();
 
 private:
+
+	Renderer m_Renderer;
 
 	SDL_Window* m_Window;
 	Raycaster m_Raycaster;
 	World m_World;
 	Camera m_Camera;
+
+	UI m_UI;
+
+	UIGroup m_Popup;
 
 	SDL_Event m_Event{};
 

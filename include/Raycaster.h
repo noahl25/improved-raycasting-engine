@@ -11,40 +11,35 @@
 #include "Ray.h"
 #include "Color.h"
 #include "Texture.h"
-#include "SizedThreadPool.h"
-
+#include "ThreadPool.h"
 
 class Raycaster {
 
 public:
 
-	Raycaster(int width, int height);
+	Raycaster(const Renderer& renderer);
 	~Raycaster();
-	void Init(SDL_Window* window);
 	void SetActiveWorld(World* world);
 
-	void Update(const Camera camera);
+	void Draw(const Camera camera);
 
 private:
 
 
-	void RaycastMT(const Camera camera, uint32_t* pixels);
-	void DrawSprites(const Camera camera, uint32_t* pixels);
+	void RaycastMT(const Camera camera);
+	void DrawSprites(const Camera camera);
 
+	const Renderer& m_Renderer;
 	int m_Width, m_Height;
-	Renderer m_Renderer;
 
-	World* m_World;
+	World* m_World = nullptr;
 
 	float* m_ZBuffer = nullptr;
-	
+
+	const int m_NumThreads;
+	ThreadPool m_ThreadPool;
 	bool m_TerminateThreads = false;
 
 	static inline const float FALLOFF = 0.23f;
-
-	static constexpr int NUM_THREADS = 4;
-
-	SizedThreadPool<NUM_THREADS> m_ThreadPool;
-
 
 };

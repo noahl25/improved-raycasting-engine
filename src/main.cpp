@@ -4,6 +4,7 @@
 int main(int argc, char** args) {
 
 	assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
+	assert(TTF_Init() == 0);
 
 	SDL_DisplayMode display;
 	SDL_GetCurrentDisplayMode(0, &display);

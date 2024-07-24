@@ -15,7 +15,7 @@ Sprite::Sprite(const Sprite& other)
     m_ModificationTable = new uint32_t[m_SpriteWidth * m_SpriteHeight];
 }
 
-Sprite::Sprite(Sprite&& other)
+Sprite::Sprite(Sprite&& other) noexcept
 {
     CopyBasicMembers(*this, other);
     m_ModificationTable = other.m_ModificationTable;
@@ -29,7 +29,7 @@ Sprite& Sprite::operator=(const Sprite& other)
     return *this;
 }
 
-Sprite& Sprite::operator=(Sprite&& other)
+Sprite& Sprite::operator=(Sprite&& other) noexcept
 { 
     CopyBasicMembers(*this, other);
     m_ModificationTable = other.m_ModificationTable;
@@ -102,6 +102,12 @@ void Sprite::Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixe
 
     Util::MultiplyRGBA(tex.GetPixels(), m_ModificationTable, m_SpriteWidth * m_SpriteHeight, -m_Falloff * transformY + 1);
 
+    int lowerX = renderer.GetWidth() / 2 - 5;
+    int upperX = lowerX + 10;
+
+    int lowerY = renderer.GetHeight() / 2 - 5;
+    int upperY = lowerY + 10;
+
     for (int stripe = drawStartX; stripe < drawEndX; ++stripe)
     {
         int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * m_SpriteWidth / spriteWidth) / 256;
@@ -113,12 +119,20 @@ void Sprite::Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixe
                 int texY = ((d * m_SpriteHeight) / spriteHeight) / 256;
 
                 uint32_t color = m_ModificationTable[texY * m_SpriteWidth + texX];
-                if ((color & 0xff) != 0)
+                if ((color & 0xff) != 0) {
                     pixels[y * renderer.GetWidth() + stripe] = color;
+
+                    if (Util::InRange(stripe, lowerX, upperX) && Util::InRange(y, lowerY, upperY)) {
+                        HoveredSprite = this;
+                        HoveredSpriteDistance = transformY;
+                    }
+                }
  
             }
         }
     }
+
+
  
 }
 
