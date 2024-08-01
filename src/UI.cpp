@@ -28,6 +28,16 @@ void UI::Draw() const
 
 }
 
+void UI::MoveToTop(const UIComponent* component)
+{
+	int i = 0;
+	for (; i < m_UIComponents.size(); i++)
+		if (component == m_UIComponents[i])
+			break;
+	auto it = m_UIComponents.begin() + i;
+	std::rotate(it, it + 1, m_UIComponents.end());
+}
+
 UI::~UI()
 {
 	for (auto& component : m_UIComponents) {

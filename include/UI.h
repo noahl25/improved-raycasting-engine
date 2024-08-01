@@ -15,6 +15,7 @@ public:
 	UI(const Renderer& renderer);
 	void Update();
 	void Draw() const;
+	void MoveToTop(const UIComponent* component);
 
 	template <typename Item, typename...TArgs> requires std::is_base_of_v<UIComponent, Item> && Util::is_different_v<UIComponent, Item>
 	Item* RegisterUIComponent(TArgs&&... args) {

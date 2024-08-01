@@ -1,19 +1,19 @@
+#include <SDL.h>
+#include <SDL_ttf.h>
+
+#include "StateMachine.h"
 #include "Game.h"
-#include "Timer.h"
+#include "MainMenu.h"
 
 int main(int argc, char** args) {
 
 	assert(SDL_Init(SDL_INIT_EVERYTHING) == 0);
 	assert(TTF_Init() == 0);
 
-	SDL_DisplayMode display;
-	SDL_GetCurrentDisplayMode(0, &display);
-
-	int w = display.w / 2.75f;
-	int h = display.h / 1.75f;
-
-	Game game(w, h);
-	game.Run();
+	StateMachine states("The Great Escape", 750, 650);
+	states.Push<MainMenu>(750, 650);
+	states.Push<Game>(750, 650);
+	states.Run();
 
 	return 0;
 }

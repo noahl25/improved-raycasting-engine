@@ -10,6 +10,8 @@
 #include "Camera.h"
 #include "Texture.h"
 
+class World;
+
 class Sprite {
 public:
 
@@ -30,7 +32,8 @@ public:
 	inline const glm::vec3& GetPosition() const { return m_Position; }
 	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
 	inline void SetScale(float scale) { m_Scale = scale; }
-	inline void SetHeightOffset(float offset) { m_HeightOffset = offset;  }
+	inline void SetHeightOffset(float offset) { m_HeightOffset = offset; }
+	inline const std::string& GetIdentifier() { return m_Identifier; }
 
 	//rather than raycasting to see what sprites are on crosshair, simply check when drawing to see if any pixels overlap with the center
 	static inline const Sprite* HoveredSprite = nullptr;
@@ -48,6 +51,8 @@ private:
 
 	uint32_t* m_ModificationTable = nullptr;
 
+	std::string m_Identifier;
+
 	static inline const float m_Falloff = 0.23f;
 	static inline const std::hash<std::string> m_StringHash;
 	static inline std::unordered_map<int, Texture> m_TextureAtlas;
@@ -55,5 +60,7 @@ private:
 private:
 
 	void CopyBasicMembers(Sprite& first, const Sprite& second);
+
+	friend class World;
 
 };

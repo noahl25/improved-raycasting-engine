@@ -44,6 +44,8 @@ void Raycaster::RaycastMT(const Camera camera)
 		m_ThreadPool.Do(
 			[this, camera, cameraDir, cameraRight, begin, end] {
 
+				glm::vec2 src = glm::vec2(2.0f, 2.0f);
+
 				Ray ray;
 				ray.Start = camera.Position;
 				int halfWidth = m_Width / 2;
@@ -100,7 +102,10 @@ void Raycaster::RaycastMT(const Camera camera)
 								for (int j = lineOffset; j <= lineOffset + lineHeight; j++) {
 
 									uint32_t color = hit.TextureHit->PixelAt((int)texX, (int)texY);
-									//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
+
+									//color = Util::Blend(color, Util::AsUInt32({ 1.0f, 0.85f, 0.45f, 1.0f }), 1.0f / glm::distance(hit.HitPos, src));
+									
+
 									color = Util::MultiplyRGBA(color, colorMod);
 
 									if (j < m_Height)
@@ -120,6 +125,10 @@ void Raycaster::RaycastMT(const Camera camera)
 
 									uint32_t color = hit.TextureHit->PixelAt((int)texX, (int)texY);
 									//	if (hit.Side == 0) color = Util::MultiplyRGBA(color, 1.3f);
+
+									//color = Util::Blend(color, Util::AsUInt32({ 1.0f, 0.85f, 0.45f, 1.0f }), 1.0f / glm::distance(hit.HitPos, src));
+									
+
 									color = Util::MultiplyRGBA(color, colorMod);
 
 									
@@ -190,6 +199,9 @@ void Raycaster::RaycastMT(const Camera camera)
 
 
 							uint32_t color = texture.PixelAt(floorTexX, floorTexY);
+
+							//color = Util::Blend(color, Util::AsUInt32({ 1.0f, 0.85f, 0.45f, 1.0f }), glm::clamp(1.0f / glm::distance({ currentFloorX, currentFloorY }, src), 0.0f, 1.0f));
+							
 							m_Renderer.GetRenderingSurface()[start] = Util::MultiplyRGBA(color, floorColorMod);
 							start += m_Width;
 							

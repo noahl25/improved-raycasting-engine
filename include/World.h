@@ -43,7 +43,7 @@ private:
 
 	std::vector<Sprite> m_Sprites;
 	std::vector<int> m_Room;
-	//1-15 for walls 16-30 for floors
+	//0-14 for walls 15-29 for floors
 	Texture m_RoomTextureAtlas[30];
 
 	int m_MapWidth, m_MapHeight;

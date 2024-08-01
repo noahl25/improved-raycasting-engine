@@ -5,26 +5,26 @@
 
 #include "Raycaster.h"
 #include "UI.h"
+#include "Animation.h"
+#include "State.h"
 
-class Game
+class Game : public State
 {
 public:
 
-	Game(int width, int height);
+	Game(SDL_Window* window, int width, int height);
 	~Game();
-
-	void Run();
 
 private:
 
-	void HandleEvents();
-	void Render();
+	void HandleEvents(float deltaTime) override;
+	void Update(float deltaTime) override;
+	void Render(float deltaTime) override;
 
 private:
 
 	Renderer m_Renderer;
 
-	SDL_Window* m_Window;
 	Raycaster m_Raycaster;
 	World m_World;
 	Camera m_Camera;
@@ -33,11 +33,12 @@ private:
 
 	UIGroup m_Popup;
 
+	UIRectComponent* m_FadeIn;
+
 	SDL_Event m_Event{};
 
+	const uint8_t* m_KeyboardState = nullptr;
+
 	int m_Width, m_Height;
-	bool m_Running = true;
-	bool m_Paused = false;
-	float m_DeltaTime = 0.016f;
 
 };

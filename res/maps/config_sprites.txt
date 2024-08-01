@@ -6,6 +6,7 @@
 //  texture - required, texture path of sprite
 //  scale - sprite scale (bigger # for smaller sprite)
 //  offset - height offset
+//  identifier - string identifier
 
 SPRITE
 color:0x00ff00ff

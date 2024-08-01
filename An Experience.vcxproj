@@ -120,9 +120,10 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,7 +135,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>
@@ -144,6 +145,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <Optimization>MaxSpeed</Optimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,6 +157,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\MainMenu.cpp" />
+    <ClCompile Include="src\StateMachine.cpp" />
+    <ClCompile Include="src\FontManager.cpp" />
     <ClCompile Include="src\ThreadPool.cpp" />
     <ClCompile Include="src\UIComponent.cpp" />
     <ClCompile Include="src\Sprite.cpp" />
@@ -170,13 +175,18 @@
     <ClCompile Include="vendor\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Animation.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Color.h" />
+    <ClInclude Include="include\FontManager.h" />
     <ClInclude Include="include\Game.h" />
+    <ClInclude Include="include\MainMenu.h" />
     <ClInclude Include="include\Ray.h" />
     <ClInclude Include="include\Raycaster.h" />
     <ClInclude Include="include\Renderer.h" />
     <ClInclude Include="include\Sprite.h" />
+    <ClInclude Include="include\State.h" />
+    <ClInclude Include="include\StateMachine.h" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\ThreadPool.h" />
     <ClInclude Include="include\Timer.h" />
@@ -191,6 +201,7 @@
     <Image Include="res\maps\map1_room.png" />
     <Image Include="res\sprites\barrel.png" />
     <Image Include="res\textures\cobble.png" />
+    <Image Include="res\textures\MainMenu.png" />
     <Image Include="res\textures\weirdcobble.png" />
   </ItemGroup>
   <ItemGroup>

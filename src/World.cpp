@@ -142,8 +142,8 @@ void World::LoadSprites(const char* path, const char* config)
 			sprite = Sprite();
 		}
 		else if (!line.empty()) {
-			std::string_view key = line.substr(0, line.find(':'));
-			std::string_view value = line.substr(line.find(':') + 1);
+			std::string key = line.substr(0, line.find(':'));
+			std::string value = line.substr(line.find(':') + 1);
 			std::stringstream ss;
 			if (key == "color") {
 				ss << std::hex << value;
@@ -162,6 +162,9 @@ void World::LoadSprites(const char* path, const char* config)
 				ss >> scale;
 				sprite.SetScale(scale);
 			}
+			//else if (key == "identifier") {
+			//	sprite.m_Identifier = { value.begin(), value.end() };
+			//}
 
 		}
 	}

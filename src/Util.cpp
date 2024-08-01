@@ -29,4 +29,14 @@ namespace Util {
         return (r << 24) | (g << 16) | (b << 8) | a;
  
     }
+    SDL_Rect PadRect(const SDL_Rect& rect, int pad)
+    {
+        SDL_Rect ret;
+        ret.x = rect.x - pad;
+        ret.w = rect.w + pad * 2;
+        ret.y = rect.y - pad;
+        ret.h = rect.h + pad * 2;
+        return ret;
+    }
+
 };

@@ -9,7 +9,10 @@ Renderer::Renderer(int width, int height)
 void Renderer::Init(SDL_Window* window) {
 	assert(window != nullptr);
 	m_Renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-	assert(m_Renderer != nullptr);
+	if (m_Renderer == nullptr) {
+		printf(SDL_GetError());
+		__debugbreak();
+	}
 	m_ActiveRenderer = m_Renderer;
 	SDL_SetRenderDrawBlendMode(m_Renderer, SDL_BLENDMODE_BLEND);
 }
@@ -39,7 +42,6 @@ void Renderer::Line(const glm::vec2& first, const glm::vec2& second, const glm::
 
 void Renderer::Texture(SDL_Texture* texture, const SDL_Rect* dest, const SDL_Rect* src) const
 {
- 
 	SDL_RenderCopy(m_Renderer, texture, src, dest);
 }
 
@@ -67,4 +69,5 @@ void Renderer::BlitToRenderingSurface(SDL_Surface* surface, SDL_Rect& rect) cons
 Renderer::~Renderer()
 {
 	SDL_DestroyRenderer(m_Renderer);
+	SDL_FreeSurface(m_RenderingSurface);
 }

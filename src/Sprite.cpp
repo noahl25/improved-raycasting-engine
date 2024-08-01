@@ -145,6 +145,7 @@ void Sprite::CopyBasicMembers(Sprite& first, const Sprite& second)
     first.m_TextureKey = second.m_TextureKey;
     first.m_SpriteWidth = second.m_SpriteWidth;
     first.m_SpriteHeight = second.m_SpriteHeight;
+    first.m_Identifier = second.m_Identifier;
 }
 
 Sprite::~Sprite()
