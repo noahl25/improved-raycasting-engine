@@ -232,13 +232,13 @@ void Raycaster::RaycastMT(const Camera camera)
 void Raycaster::DrawSprites(const Camera camera)
 {
 	Sprite::HoveredSprite = nullptr;
+ 
+	for (const Sprite* sprite : m_World->GetSpritesSorted(camera)) {
 
-	for (const Sprite& sprite : m_World->GetSpritesSorted(camera)) {
-
-		sprite.Draw(m_Renderer, camera, m_Renderer.GetRenderingSurface(), m_ZBuffer);
+		sprite->Draw(m_Renderer, camera, m_Renderer.GetRenderingSurface(), m_ZBuffer);
 
 	}
-
+ 
 }
 
 Raycaster::~Raycaster()

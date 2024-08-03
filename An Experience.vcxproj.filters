@@ -63,6 +63,12 @@
     <ClCompile Include="src\MainMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AnimatedSprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Renderer.h">
@@ -125,6 +131,12 @@
     <ClInclude Include="include\MainMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AnimatedSprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cobble.png">
@@ -145,6 +157,9 @@
     <Image Include="res\textures\MainMenu.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\sprites\test.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\maps\config_sprites.txt" />
@@ -153,5 +168,16 @@
   <ItemGroup>
     <Font Include="res\fonts\PressStart2P-Regular.ttf" />
     <Font Include="res\fonts\PixelifySans-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\Desktop\sdlprojects\utils\SDL2-devel-2.28.1-mingw\SDL2-2.28.1\test\sample.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\sample.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\buttonpressed.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

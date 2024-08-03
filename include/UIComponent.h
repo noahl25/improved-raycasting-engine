@@ -112,6 +112,10 @@ public:
 		m_Updated = true;
 	}
 
+	inline void SetOutline(int outline) {
+		TTF_SetFontOutline(m_Font, outline);
+	}
+
 	inline void AddBackground(const glm::vec4& color, int margin) { m_TextBackgrounds.push_back({ false, SDL_Rect{}, color, margin }); }
 
 	inline const SDL_Rect& GetTextBounds() const { return m_TextRect; }
@@ -167,19 +171,13 @@ public:
 		m_Writing = false;
 		SetText("");
 	}
-	inline void Write() { m_Writing = true; }
 	
-private:
+	inline void Write() { m_Writing = true; }
 
-	inline void SetText(std::string&& text) {
-		m_Text.Chars = std::move(text);
-		m_Updated = true;
-	}
+	inline void SetEndText(const std::string& str) { Reset(); m_EndText = str; m_EndTextBounds = SizeText(str.c_str()); }
 
-	inline void SetText(const std::string& text) {
-		m_Text.Chars = text;
-		m_Updated = true;
-	}
+	inline void RecalculateEndTextBounds() { m_EndTextBounds = SizeText(m_EndText.c_str()); }
+	inline const SDL_Rect& GetEndTextBounds() { return m_EndTextBounds; }
 
 private:
 
@@ -189,6 +187,8 @@ private:
 	int m_Speed;
 
 	bool m_Writing = false;
+
+	SDL_Rect m_EndTextBounds;
 
 };
 

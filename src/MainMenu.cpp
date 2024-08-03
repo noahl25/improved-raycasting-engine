@@ -13,26 +13,24 @@ static void FadeInButton(UITextButtonComponent& comp) {
 		alpha = 1.0f;
 }
 
-MainMenu::MainMenu(SDL_Window* window, int width, int height)
-	: m_Renderer(width, height), m_UI(m_Renderer), m_Width(width), m_Height(height)
+MainMenu::MainMenu(const Renderer& renderer, int width, int height)
+	: m_Renderer(renderer), m_UI(m_Renderer), m_Width(width), m_Height(height)
 {
-
-	m_Renderer.Init(window);
-
 	m_MainMenuBGImage = m_UI.RegisterUIComponent<UIImageComponent>("res/textures/MainMenu.png", SDL_Rect{ 0, 0, 750, 650 });
 	m_MainMenuBGImage->SetColorMod({ 0, 0, 0, 255 });
 
 	Text text1;
-	text1.Chars = "The Great Escape";
+	text1.Chars = "ESCAPE";
 	text1.Color = { 0.5f, 0.5f, 0.5f, 1.0f };
 	text1.Location = { 100, 100 };
 	text1.Wrap = -1;
-	m_MainMenuTitle.AddComponent(m_UI.RegisterUIComponent<UITextComponent>("res/fonts/PixelifySans-Regular.ttf", 40, text1));
+	m_MainMenuTitle.AddComponent(m_UI.RegisterUIComponent<UITextComponent>("res/fonts/PixelifySans-Regular.ttf", 60, text1));
 	text1.Color = { 0.3f, 0.3f, 0.3f, 1.0f };
-	m_MainMenuTitle.AddComponent(m_UI.RegisterUIComponent<UITextComponent>("res/fonts/PixelifySans-Regular.ttf", 40, text1));
+	m_MainMenuTitle.AddComponent(m_UI.RegisterUIComponent<UITextComponent>("res/fonts/PixelifySans-Regular.ttf", 60, text1));
 
 	m_UI.MoveToTop(&m_MainMenuTitle.Get<UITextComponent>(0));
 
+	m_MainMenuTitle.Get<UITextComponent>(1).SetOutline(3);
 	m_MainMenuTitle.ForEach<UITextComponent>([this](UITextComponent& comp) {
 		comp.SetStyle(TTF_STYLE_BOLD);
 		comp.Center(m_Width, m_Height);
@@ -47,7 +45,7 @@ MainMenu::MainMenu(SDL_Window* window, int width, int height)
 	buttonText.Color = { 1.0f, 1.0f, 1.0f, 0.0f };
 	buttonText.Location = { 100, 100 };
 
-	m_MainMenuButtons.AddComponent(m_UI.RegisterUIComponent<UITextButtonComponent>("res/fonts/PixelifySans-Regular.ttf", 20, buttonText, [this](UITextButtonComponent& it) { Complete(); }));
+	m_MainMenuButtons.AddComponent(m_UI.RegisterUIComponent<UITextButtonComponent>("res/fonts/PixelifySans-Regular.ttf", 20, buttonText, [this](UITextButtonComponent& it) { Audio::SetSoundEffectVolume("res/sounds/buttonpressed.wav", 10); Audio::PlaySoundEffect("res/sounds/buttonpressed.wav"); Complete(); }));
 	buttonText.Chars = "Quit";
 	m_MainMenuButtons.AddComponent(m_UI.RegisterUIComponent<UITextButtonComponent>("res/fonts/PixelifySans-Regular.ttf", 20, buttonText, [](UITextButtonComponent& it) { std::exit(0); }));
 
@@ -95,13 +93,16 @@ MainMenu::MainMenu(SDL_Window* window, int width, int height)
 
 	m_MainMenuButtons.Hide();
 }
-
+ 
 void MainMenu::HandleEvents(float deltaTime)
 {
+
 	while ((SDL_PollEvent(&m_Event)) != 0) {
 		switch (m_Event.type) {
 			case SDL_QUIT:
 				std::exit(0);
+				break;
+
 		}
 	}
 }

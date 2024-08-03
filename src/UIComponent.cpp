@@ -127,7 +127,7 @@ void UIGroup::Show()
 }
 
 UITypewriterTextComponent::UITypewriterTextComponent(const char* font, int fontSize, const Text& text, int speed)
-	: UITextComponent(font, fontSize, text), m_EndText(text.Chars), m_Speed(speed)
+	: UITextComponent(font, fontSize, text), m_EndText(text.Chars), m_Speed(speed), m_EndTextBounds(SizeText(text.Chars.c_str()))
 {
 }
 

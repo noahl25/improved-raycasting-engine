@@ -129,7 +129,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\vendor\SDL2\lib;$(SolutionDir)\vendor\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_ttf.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -152,11 +152,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)\vendor\SDL2\lib;$(SolutionDir)\vendor\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AnimatedSprite.cpp" />
+    <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\MainMenu.cpp" />
     <ClCompile Include="src\StateMachine.cpp" />
     <ClCompile Include="src\FontManager.cpp" />
@@ -175,7 +178,9 @@
     <ClCompile Include="vendor\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AnimatedSprite.h" />
     <ClInclude Include="include\Animation.h" />
+    <ClInclude Include="include\Audio.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Color.h" />
     <ClInclude Include="include\FontManager.h" />
@@ -200,6 +205,7 @@
     <Image Include="res\maps\map1_sprites.png" />
     <Image Include="res\maps\map1_room.png" />
     <Image Include="res\sprites\barrel.png" />
+    <Image Include="res\sprites\test.png" />
     <Image Include="res\textures\cobble.png" />
     <Image Include="res\textures\MainMenu.png" />
     <Image Include="res\textures\weirdcobble.png" />
@@ -211,6 +217,11 @@
   <ItemGroup>
     <Font Include="res\fonts\PixelifySans-Regular.ttf" />
     <Font Include="res\fonts\PressStart2P-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\Desktop\sdlprojects\utils\SDL2-devel-2.28.1-mingw\SDL2-2.28.1\test\sample.wav" />
+    <Media Include="res\sounds\buttonpressed.wav" />
+    <Media Include="res\sounds\sample.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

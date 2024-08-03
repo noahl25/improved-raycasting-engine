@@ -3,7 +3,10 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <memory>
 #include <fstream>
+#include <functional>
+#include <map>
 
 #include "Sprite.h"
 #include "Ray.h"
@@ -21,15 +24,17 @@ public:
 	void LoadSprites(const char* path, const char* config);
 	RaycastHit CastRay(const Ray& ray);
 
+	void Update();
+
 	inline bool Collision(int x, int y) const {
 		if (m_Room[y * m_MapWidth + x] == 1)
 			return true;
 		return false;
 	}
-	inline const std::vector<Sprite>& GetSpritesSorted(const Camera& camera) { 
-		std::sort(m_Sprites.begin(), m_Sprites.end(), [camera](const Sprite& first, const Sprite& second) {
-			float firstDist = (first.GetPosition().x - camera.Position.x) * (first.GetPosition().x - camera.Position.x) + (first.GetPosition().y - camera.Position.y) * (first.GetPosition().y - camera.Position.y);
-			float secondDist = (second.GetPosition().x - camera.Position.x) * (second.GetPosition().x - camera.Position.x) + (second.GetPosition().y - camera.Position.y) * (second.GetPosition().y - camera.Position.y);
+	inline const std::vector<Sprite*>& GetSpritesSorted(const Camera& camera) {
+		std::sort(m_Sprites.begin(), m_Sprites.end(), [camera](const Sprite* first, const Sprite* second) {
+			float firstDist = (first->GetPosition().x - camera.Position.x) * (first->GetPosition().x - camera.Position.x) + (first->GetPosition().y - camera.Position.y) * (first->GetPosition().y - camera.Position.y);
+			float secondDist = (second->GetPosition().x - camera.Position.x) * (second->GetPosition().x - camera.Position.x) + (second->GetPosition().y - camera.Position.y) * (second->GetPosition().y - camera.Position.y);
 			return firstDist > secondDist;
 		});
 		return m_Sprites;
@@ -38,10 +43,15 @@ public:
 	inline const Texture& GetTextureAtPos(int x, int y) { 
 		return m_RoomTextureAtlas[m_Room[y * m_MapWidth + x]];
 	}
+	inline void PushIdentifier(const std::string& str, const std::function<Sprite* ()>& creator) {
+		m_SpriteFactory[str] = creator;
+	}
 
 private:
 
-	std::vector<Sprite> m_Sprites;
+	std::vector<Sprite*> m_Sprites;
+	std::unordered_map<std::string, std::function<Sprite*()>> m_SpriteFactory;
+
 	std::vector<int> m_Room;
 	//0-14 for walls 15-29 for floors
 	Texture m_RoomTextureAtlas[30];

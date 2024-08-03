@@ -1,14 +1,18 @@
 #include "StateMachine.h"
-#include "Animation.h"
 
 StateMachine::StateMachine(const char* name, int width, int height)
+	: m_Renderer(width, height)
 {
 	m_Window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, NULL);
+	m_Renderer.Init(m_Window);
+	m_Renderer.CreateRenderingSurface();
+
+	Audio::Init();
 }
 
 void StateMachine::Run()
 {
-	assert(m_StateCreators.size() != 0, "push 1 or more states before running");
+	assert(m_StateCreators.size() != 0);
 	m_CurrentState = m_StateCreators[m_CurrentStateIndex]();
 
 	const int FPSTarget = 60;

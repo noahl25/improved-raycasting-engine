@@ -1,5 +1,4 @@
 #include "World.h"
-#include <iostream>
 
 void World::LoadRoom(const char* path, const char* config)
 {
@@ -103,6 +102,8 @@ void World::LoadRoom(const char* path, const char* config)
 
 	}
 
+	stream.close();
+
 	for (int i = 0; i < m_MapHeight; i++) {
 		for (int j = 0; j < m_MapWidth; j++) {
 			if (m_IDAtlas.find(map.PixelAt(j, i)) != m_IDAtlas.end()) {
@@ -122,12 +123,13 @@ void World::LoadSprites(const char* path, const char* config)
 {
 	assert(m_Room.size() != 0);
 
-	std::unordered_map<uint32_t, Sprite> spriteAtlas;
+	std::multimap<uint32_t, std::string> spriteAtlas;
 	std::ifstream stream(config);
 	std::string line;
 
-	Sprite sprite;
+	Sprite* sprite = nullptr;
 	uint32_t color;
+	std::string identifier;
 	bool parsingSprites = false;
 	
 	while (std::getline(stream, line)) {
@@ -136,10 +138,9 @@ void World::LoadSprites(const char* path, const char* config)
 
 		if (line == "SPRITE") {
 			if (parsingSprites) {
-				spriteAtlas[color] = sprite;
+				spriteAtlas.insert({ color, identifier });
 			}
 			parsingSprites = true;
-			sprite = Sprite();
 		}
 		else if (!line.empty()) {
 			std::string key = line.substr(0, line.find(':'));
@@ -149,27 +150,16 @@ void World::LoadSprites(const char* path, const char* config)
 				ss << std::hex << value;
 				ss >> color;
 			}
-			else if (key == "texture") {
-				sprite.SetTexture(Renderer::GetActiveRenderer(), {value.begin(), value.end()});
+			if (key == "identifier") {
+				identifier = value;
+				if (m_SpriteFactory.find(identifier) == m_SpriteFactory.end())
+					__debugbreak(); //push identifier with factory function first
 			}
-			else if (key == "offset") {
-				std::string str = { value.begin(), value.end() };
-				sprite.SetHeightOffset(std::stoi(str));
-			}
-			else if (key == "scale") {
-				float scale;
-				ss << value;
-				ss >> scale;
-				sprite.SetScale(scale);
-			}
-			//else if (key == "identifier") {
-			//	sprite.m_Identifier = { value.begin(), value.end() };
-			//}
 
 		}
 	}
 
-	spriteAtlas[color] = sprite;
+	spriteAtlas.insert({ color, identifier });
 	
 	stream.close();
 
@@ -179,8 +169,13 @@ void World::LoadSprites(const char* path, const char* config)
 		for (int j = 0; j < map.GetWidth(); j++) {
 
 			if (spriteAtlas.find(map.PixelAt(j, i)) != spriteAtlas.end()) {
-				spriteAtlas[map.PixelAt(j, i)].SetPosition(glm::vec3((float)j / (float)map.GetWidth() * m_MapWidth, (float)i / (float)map.GetHeight() * m_MapHeight, 0));
-				m_Sprites.push_back(spriteAtlas[map.PixelAt(j, i)]);
+				for (auto [key, value] : spriteAtlas) {
+					if (key == map.PixelAt(j, i)) {
+						Sprite* temp = m_SpriteFactory[value]();
+						temp->SetPosition(glm::vec3((float)j / (float)map.GetWidth() * m_MapWidth, (float)i / (float)map.GetHeight() * m_MapHeight, 0));
+						m_Sprites.push_back(temp);
+					}
+				}
 			}
 
 		}
@@ -270,7 +265,15 @@ RaycastHit World::CastRay(const Ray& ray)
 
 }
 
+void World::Update()
+{
+	for (auto& sprite : m_Sprites)
+		sprite->Update();
+}
+
 World::~World()
 {
+	for (Sprite* sprite : m_Sprites)
+		delete sprite;
  
 }

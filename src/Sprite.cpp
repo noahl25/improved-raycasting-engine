@@ -41,7 +41,7 @@ Sprite& Sprite::operator=(Sprite&& other) noexcept
 void Sprite::SetTexture(SDL_Renderer* renderer, const std::string& path)
 {
     int key = m_StringHash(path);
-    if (m_TextureAtlas.find(key) == m_TextureAtlas.end()) {
+    if (!m_TextureAtlas.contains(key)) {
 
         Texture temp(path.c_str());
         m_TextureAtlas[key] = temp;
@@ -53,6 +53,17 @@ void Sprite::SetTexture(SDL_Renderer* renderer, const std::string& path)
     m_SpriteWidth = temp.GetWidth();
     m_ModificationTable = new uint32_t[m_SpriteWidth * m_SpriteHeight];
 
+}
+
+int Sprite::PreloadTexture(SDL_Renderer* renderer, const std::string& path)
+{
+    int key = m_StringHash(path);
+
+    if (m_TextureAtlas.contains(key))
+        return key;
+
+    m_TextureAtlas[key] = Texture(path.c_str());
+    return key;
 }
 
 void Sprite::Update()
@@ -136,6 +147,16 @@ void Sprite::Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixe
  
 }
 
+void Sprite::ChangeTexture(int key)
+{
+    m_TextureKey = key;
+}
+
+void Sprite::ChangeTexture(const std::string& str)
+{
+    ChangeTexture(m_StringHash(str));
+}
+
 void Sprite::CopyBasicMembers(Sprite& first, const Sprite& second)
 {
     first.m_Position = second.m_Position;
@@ -145,7 +166,6 @@ void Sprite::CopyBasicMembers(Sprite& first, const Sprite& second)
     first.m_TextureKey = second.m_TextureKey;
     first.m_SpriteWidth = second.m_SpriteWidth;
     first.m_SpriteHeight = second.m_SpriteHeight;
-    first.m_Identifier = second.m_Identifier;
 }
 
 Sprite::~Sprite()

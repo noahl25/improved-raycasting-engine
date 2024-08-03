@@ -13,6 +13,9 @@
 class World;
 
 class Sprite {
+
+	friend class World;
+
 public:
 
 	Sprite();
@@ -27,19 +30,23 @@ public:
 
 	virtual void Update();
 	virtual void Draw(const Renderer& renderer, const Camera& camera, uint32_t* pixels, float* zBuffer) const;
+	virtual int GetIdentifier() { return -1; }
 	
 	inline void Kill() { m_Active = false; }
 	inline const glm::vec3& GetPosition() const { return m_Position; }
 	inline void SetPosition(const glm::vec3& position) { m_Position = position; }
 	inline void SetScale(float scale) { m_Scale = scale; }
 	inline void SetHeightOffset(float offset) { m_HeightOffset = offset; }
-	inline const std::string& GetIdentifier() { return m_Identifier; }
 
 	//rather than raycasting to see what sprites are on crosshair, simply check when drawing to see if any pixels overlap with the center
 	static inline const Sprite* HoveredSprite = nullptr;
 	static inline float HoveredSpriteDistance = 0.0f;
 
-private:
+protected:
+
+	void ChangeTexture(int key);
+	void ChangeTexture(const std::string& str);
+	int PreloadTexture(SDL_Renderer* renderer, const std::string& path);
 
 	glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
 	bool m_Active = true;
@@ -51,8 +58,6 @@ private:
 
 	uint32_t* m_ModificationTable = nullptr;
 
-	std::string m_Identifier;
-
 	static inline const float m_Falloff = 0.23f;
 	static inline const std::hash<std::string> m_StringHash;
 	static inline std::unordered_map<int, Texture> m_TextureAtlas;
@@ -60,7 +65,5 @@ private:
 private:
 
 	void CopyBasicMembers(Sprite& first, const Sprite& second);
-
-	friend class World;
 
 };

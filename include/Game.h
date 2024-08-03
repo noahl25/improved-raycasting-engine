@@ -12,7 +12,7 @@ class Game : public State
 {
 public:
 
-	Game(SDL_Window* window, int width, int height);
+	Game(const Renderer& renderer, int width, int height);
 	~Game();
 
 private:
@@ -23,7 +23,7 @@ private:
 
 private:
 
-	Renderer m_Renderer;
+	const Renderer& m_Renderer;
 
 	Raycaster m_Raycaster;
 	World m_World;

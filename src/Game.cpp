@@ -1,14 +1,21 @@
 #include "Game.h"
-
-Game::Game(SDL_Window* window, int width, int height)
-	: m_Width(width), m_Height(height), m_Renderer(width, height), m_Raycaster(m_Renderer), m_UI(m_Renderer)
+#include "AnimatedSprite.h"
+Game::Game(const Renderer& renderer, int width, int height)
+	: m_Width(width), m_Height(height), m_Renderer(renderer), m_Raycaster(m_Renderer), m_UI(m_Renderer)
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
-	m_Renderer.Init(window);
-	m_Renderer.CreateRenderingSurface();
-
 	m_Raycaster.SetActiveWorld(&m_World);
+
+
+	m_World.PushIdentifier("Test", []() {
+		AnimatedSprite* sprite = new AnimatedSprite();
+		sprite->SetScale(2.0f);
+		sprite->SetHeightOffset(200.0f);
+		sprite->SetTexture(Renderer::GetActiveRenderer(), "res/sprites");
+		sprite->SetAnimationSpeed(40);
+		return sprite;
+	});
 
 	m_World.LoadRoom("res/maps/map1_room.png", "res/maps/config_room.txt");
 	m_World.LoadSprites("res/maps/map1_sprites.png", "res/maps/config_sprites.txt");
@@ -25,9 +32,10 @@ Game::Game(SDL_Window* window, int width, int height)
 	text.Wrap = 400;
 
 	m_Popup.AddComponent(m_UI.RegisterUIComponent<UITypewriterTextComponent>("res/fonts/PixelifySans-Regular.ttf", 30, text, 5));
-	m_Popup.Get<UITextComponent>().Get(FIELD(Text, Location)).y = m_Renderer.GetHeight() - m_Popup.Get<UITextComponent>().SizeText("some text hi hi hi hi hi hi hi hi hi").h - 40;
-	m_Popup.AddComponent(m_UI.RegisterUIComponent<UIRectComponent>(Util::PadRect(m_Popup.Get<UITextComponent>().SizeText("some text hi hi hi hi hi hi hi hi hi"), 21), glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f }));
-	m_Popup.AddComponent(m_UI.RegisterUIComponent<UIRectComponent>(Util::PadRect(m_Popup.Get<UITextComponent>().SizeText("some text hi hi hi hi hi hi hi hi hi"), 20), glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f }));
+	m_Popup.Get<UITypewriterTextComponent>().Get(FIELD(Text, Location)).y = m_Renderer.GetHeight() - m_Popup.Get<UITypewriterTextComponent>().SizeText("some text hi hi hi hi hi hi hi hi hi").h - 40;
+	m_Popup.Get<UITypewriterTextComponent>().RecalculateEndTextBounds();
+	m_Popup.AddComponent(m_UI.RegisterUIComponent<UIRectComponent>(Util::PadRect(m_Popup.Get<UITypewriterTextComponent>().GetEndTextBounds(), 21), glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}));
+	m_Popup.AddComponent(m_UI.RegisterUIComponent<UIRectComponent>(Util::PadRect(m_Popup.Get<UITypewriterTextComponent>().GetEndTextBounds(), 20), glm::vec4{0.0f, 0.0f, 0.0f, 1.0f}));
 
 	m_UI.MoveToTop(&m_Popup.Get<UITextComponent>());
 	
@@ -103,6 +111,7 @@ void Game::Update(float deltaTime)
 		m_Popup.Hide();
 		m_Popup.Get<UITypewriterTextComponent>().Reset();
 	}
+
 	static float fadeAlpha = 1.0f;
 
 	if (m_FadeIn && m_FadeIn->GetColor().a > 0.0f) {
@@ -114,6 +123,8 @@ void Game::Update(float deltaTime)
 		}
 			
 	}
+	
+	m_World.Update();
 	m_UI.Update();
 }
 

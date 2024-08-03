@@ -3,13 +3,13 @@
 // features should be declared as "feature:value"
 // avaliable features:
 //  color - required, color of the sprite on sprite map
-//  texture - required, texture path of sprite
-//  scale - sprite scale (bigger # for smaller sprite)
-//  offset - height offset
-//  identifier - string identifier
+//  identifier - required, custom identifier that has its creation defined in code. 
+//							this allows you to create custom classes with custom 
+//							behavior. derive this class from Sprite and override
+//							Update(). Draw() can be overriden but it isnt reccomended
 
 SPRITE
 color:0x00ff00ff
-texture:res/sprites/barrel.png
-scale:2
-offset:200
+identifier:Test
+
+ 
