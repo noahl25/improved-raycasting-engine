@@ -26,8 +26,12 @@ private:
 
 	UIImageComponent* m_MainMenuBGImage;
 
+	UIRectComponent* m_Overlay;
+
 	SDL_Event m_Event;
 
 	int m_Width, m_Height;
+
+	bool m_Complete = false;
 
 };

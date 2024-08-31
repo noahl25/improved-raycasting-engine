@@ -186,6 +186,7 @@
     <ClInclude Include="include\FontManager.h" />
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\MainMenu.h" />
+    <ClInclude Include="include\Random.h" />
     <ClInclude Include="include\Ray.h" />
     <ClInclude Include="include\Raycaster.h" />
     <ClInclude Include="include\Renderer.h" />
@@ -221,6 +222,14 @@
   <ItemGroup>
     <Media Include="..\..\..\Desktop\sdlprojects\utils\SDL2-devel-2.28.1-mingw\SDL2-2.28.1\test\sample.wav" />
     <Media Include="res\sounds\buttonpressed.wav" />
+    <Media Include="res\sounds\foosteprun_1.wav" />
+    <Media Include="res\sounds\foosteprun_3.wav" />
+    <Media Include="res\sounds\footstep.wav" />
+    <Media Include="res\sounds\footsteprun_2.wav" />
+    <Media Include="res\sounds\footsteprun_3.wav" />
+    <Media Include="res\sounds\footstep_1.wav" />
+    <Media Include="res\sounds\footstep_2.wav" />
+    <Media Include="res\sounds\footstep_3.wav" />
     <Media Include="res\sounds\sample.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -23,5 +23,4 @@ void AnimatedSprite::SetTexture(SDL_Renderer* renderer, const std::string& pathT
 		m_ModificationTable = new uint32_t[m_SpriteWidth * m_SpriteHeight];
 	}
 
-	
 }

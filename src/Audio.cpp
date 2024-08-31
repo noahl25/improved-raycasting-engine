@@ -4,7 +4,6 @@ static void ResetPositionalAudio(int channel) {
 	Mix_SetPosition(channel, 0, 0);
 }
 
-
 void Audio::Init()
 {
 	assert(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == 0);

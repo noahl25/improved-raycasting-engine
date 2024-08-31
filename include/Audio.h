@@ -51,6 +51,8 @@ public:
 
 	static void SetMaxDistance(int dist) { MaxDistance = dist; }
 
+	static void SetMasterVolume(int volume) { Mix_MasterVolume(volume); }
+
 private:
 
 	static inline std::unordered_map<std::string, Mix_Chunk*> SoundEffects;

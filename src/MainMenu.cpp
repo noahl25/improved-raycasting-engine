@@ -13,11 +13,14 @@ static void FadeInButton(UITextButtonComponent& comp) {
 		alpha = 1.0f;
 }
 
+
 MainMenu::MainMenu(const Renderer& renderer, int width, int height)
 	: m_Renderer(renderer), m_UI(m_Renderer), m_Width(width), m_Height(height)
 {
 	m_MainMenuBGImage = m_UI.RegisterUIComponent<UIImageComponent>("res/textures/MainMenu.png", SDL_Rect{ 0, 0, 750, 650 });
 	m_MainMenuBGImage->SetColorMod({ 0, 0, 0, 255 });
+
+	m_Overlay = m_UI.RegisterUIComponent<UIRectComponent>(SDL_Rect{ 0, 0, width, height }, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
 
 	Text text1;
 	text1.Chars = "ESCAPE";
@@ -34,7 +37,7 @@ MainMenu::MainMenu(const Renderer& renderer, int width, int height)
 	m_MainMenuTitle.ForEach<UITextComponent>([this](UITextComponent& comp) {
 		comp.SetStyle(TTF_STYLE_BOLD);
 		comp.Center(m_Width, m_Height);
-	});
+		});
 
 
 	m_MainMenuTitle.Get<UITextComponent>(1).Get(FIELD(Text, Location)).x -= 2;
@@ -45,21 +48,21 @@ MainMenu::MainMenu(const Renderer& renderer, int width, int height)
 	buttonText.Color = { 1.0f, 1.0f, 1.0f, 0.0f };
 	buttonText.Location = { 100, 100 };
 
-	m_MainMenuButtons.AddComponent(m_UI.RegisterUIComponent<UITextButtonComponent>("res/fonts/PixelifySans-Regular.ttf", 20, buttonText, [this](UITextButtonComponent& it) { Audio::SetSoundEffectVolume("res/sounds/buttonpressed.wav", 10); Audio::PlaySoundEffect("res/sounds/buttonpressed.wav"); Complete(); }));
+	m_MainMenuButtons.AddComponent(m_UI.RegisterUIComponent<UITextButtonComponent>("res/fonts/PixelifySans-Regular.ttf", 20, buttonText, [this](UITextButtonComponent& it) { Audio::SetSoundEffectVolume("res/sounds/buttonpressed.wav", 10); Audio::PlaySoundEffect("res/sounds/buttonpressed.wav"); m_Complete = true; }));
 	buttonText.Chars = "Quit";
 	m_MainMenuButtons.AddComponent(m_UI.RegisterUIComponent<UITextButtonComponent>("res/fonts/PixelifySans-Regular.ttf", 20, buttonText, [](UITextButtonComponent& it) { std::exit(0); }));
 
 	m_MainMenuButtons.ForEach<UITextButtonComponent>([this](UITextButtonComponent& comp) {
 		comp.Center(m_Width, m_Height);
 		comp.SetBoundingBoxStatic();
-	});
+		});
 
 	m_MainMenuButtons.Get<UITextButtonComponent>(0).Get(&Text::Location).y -= 15.0f;
 	m_MainMenuButtons.Get<UITextButtonComponent>(1).Get(&Text::Location).y += 15.0f;
 
 	m_MainMenuButtons.ForEach<UITextButtonComponent>([this](UITextButtonComponent& comp) {
 		comp.RecalculateBoundingBox();
-	});
+		});
 
 	m_MainMenuButtons.Get<UITextButtonComponent>(0).SetOnHover([](UITextButtonComponent& comp) {
 		static int originalPos = comp.Get(&Text::Location).y;
@@ -67,14 +70,14 @@ MainMenu::MainMenu(const Renderer& renderer, int width, int height)
 		comp.Get(&Text::Color).b = 0.5f;
 		comp.Get(&Text::Color).r = 0.5f;
 		comp.Get(&Text::Color).g = 0.5f;
-	});
+		});
 	m_MainMenuButtons.Get<UITextButtonComponent>(0).SetOnLeaveHover([this](UITextButtonComponent& comp) {
 		comp.Center(m_Width, m_Height);
 		comp.Get(&Text::Location).y -= 15.0f;
 		comp.Get(&Text::Color).b = 1.0f;
 		comp.Get(&Text::Color).r = 1.0f;
 		comp.Get(&Text::Color).g = 1.0f;
-	});
+		});
 
 	m_MainMenuButtons.Get<UITextButtonComponent>(1).SetOnHover([](UITextButtonComponent& comp) {
 		static int originalPos = comp.Get(&Text::Location).y;
@@ -82,14 +85,16 @@ MainMenu::MainMenu(const Renderer& renderer, int width, int height)
 		comp.Get(&Text::Color).b = 0.5f;
 		comp.Get(&Text::Color).r = 0.5f;
 		comp.Get(&Text::Color).g = 0.5f;
-	});
+		});
 	m_MainMenuButtons.Get<UITextButtonComponent>(1).SetOnLeaveHover([this](UITextButtonComponent& comp) {
 		comp.Center(m_Width, m_Height);
 		comp.Get(&Text::Location).y += 15.0f;
 		comp.Get(&Text::Color).b = 1.0f;
 		comp.Get(&Text::Color).r = 1.0f;
 		comp.Get(&Text::Color).g = 1.0f;
-	});
+		});
+
+	m_UI.MoveToTop(m_Overlay);
 
 	m_MainMenuButtons.Hide();
 }
@@ -103,12 +108,14 @@ void MainMenu::HandleEvents(float deltaTime)
 				std::exit(0);
 				break;
 
+
 		}
 	}
 }
 
 void MainMenu::Update(float deltaTime)
 {
+
 	static int bgColorCounter = 0;
 
 	if (m_MainMenuTitle.Get<UITextComponent>(0).Get(&Text::Location).y > 200 && Animation::Counter() > 100) {
@@ -122,15 +129,28 @@ void MainMenu::Update(float deltaTime)
 		bgColorCounter++;
 		m_MainMenuBGImage->SetColorMod({ mod, mod, mod, 255 });
 	}
+	
+	if (m_Complete) {
+
+		m_Overlay->SetAlpha(m_Overlay->GetColor().a + 0.01f);
+		if (m_Overlay->GetColor().a >= 1.0f) {
+			m_Overlay->SetAlpha(0.0f);
+			Complete();
+		}
+
+	}
 
 	m_UI.Update();
+
+
 }
 
 void MainMenu::Render(float deltaTime)
 {
+	
+
 	m_Renderer.Clear();
-
 	m_UI.Draw();
-
 	m_Renderer.Present();
+
 }

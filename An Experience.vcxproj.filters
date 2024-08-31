@@ -137,6 +137,9 @@
     <ClInclude Include="include\AnimatedSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cobble.png">
@@ -177,6 +180,30 @@
       <Filter>Resource Files</Filter>
     </Media>
     <Media Include="res\sounds\buttonpressed.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\footstep.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\foosteprun_1.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\foosteprun_3.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\footstep_1.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\footstep_2.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\footstep_3.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\footsteprun_2.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="res\sounds\footsteprun_3.wav">
       <Filter>Resource Files</Filter>
     </Media>
   </ItemGroup>

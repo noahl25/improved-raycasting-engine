@@ -1,7 +1,7 @@
 #include "Game.h"
-#include "AnimatedSprite.h"
+ 
 Game::Game(const Renderer& renderer, int width, int height)
-	: m_Width(width), m_Height(height), m_Renderer(renderer), m_Raycaster(m_Renderer), m_UI(m_Renderer)
+	: m_Width(width), m_Height(height), m_Renderer(renderer), m_Raycaster(m_Renderer), m_UI(m_Renderer), m_FootstepSFX("res/sounds/footstep.wav")
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
@@ -9,11 +9,10 @@ Game::Game(const Renderer& renderer, int width, int height)
 
 
 	m_World.PushIdentifier("Test", []() {
-		AnimatedSprite* sprite = new AnimatedSprite();
+		Sprite* sprite = new Sprite();
 		sprite->SetScale(2.0f);
 		sprite->SetHeightOffset(200.0f);
-		sprite->SetTexture(Renderer::GetActiveRenderer(), "res/sprites");
-		sprite->SetAnimationSpeed(40);
+		sprite->SetTexture(Renderer::GetActiveRenderer(), "res/sprites/barrel.png");
 		return sprite;
 	});
 
@@ -42,6 +41,11 @@ Game::Game(const Renderer& renderer, int width, int height)
 	m_Popup.Hide();
 
 	m_FadeIn = m_UI.RegisterUIComponent<UIRectComponent>(SDL_Rect{ 0, 0, width, height }, glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f });
+
+	Audio::SetMasterVolume(20);
+	m_FootstepSFX.SetVolume(1);
+
+ 
 
 }
 
@@ -91,6 +95,16 @@ void Game::Update(float deltaTime)
 	if (m_KeyboardState[SDL_SCANCODE_D]) nextMove += right;
 
 	if (nextMove.x != 0 || nextMove.y != 0) {
+
+		if (!m_FootstepSFX.Playing()) {
+			int sfx = (m_KeyboardState[SDL_SCANCODE_LSHIFT] ? Random::UInt(2, 3) : Random::UInt(0, 1));
+			if (m_KeyboardState[SDL_SCANCODE_LSHIFT])
+				m_FootstepSFX.SetVolume(10);
+			else
+				m_FootstepSFX.SetVolume(1);
+			m_FootstepSFX.SetSoundEffect(m_FootstepSFXOptions[sfx]);
+			m_FootstepSFX.Play();
+		}
 
 		nextMove = glm::normalize(nextMove);
 		nextMove *= m_KeyboardState[SDL_SCANCODE_LSHIFT] ? moveSpeed * 2.5f : moveSpeed;

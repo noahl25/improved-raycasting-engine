@@ -31,18 +31,20 @@ void StateMachine::Run()
 
 		m_CurrentState->HandleEvents(m_DeltaTime);
 		m_CurrentState->Update(m_DeltaTime);
-		m_CurrentState->Render(m_DeltaTime);
-
-		frameTime = SDL_GetTicks() - frameStart;
-		m_DeltaTime = frameTime / 1000.0f;
-
 		if (m_CurrentState->IsComplete()) {
 			delete m_CurrentState;
 			m_CurrentStateIndex++;
 			if (m_CurrentStateIndex > m_StateCreators.size() - 1)
 				break;
 			m_CurrentState = m_StateCreators[m_CurrentStateIndex]();
+			continue;
 		}
+		m_CurrentState->Render(m_DeltaTime);
+
+		frameTime = SDL_GetTicks() - frameStart;
+		m_DeltaTime = frameTime / 1000.0f;
+
+
 
 	}
 }
